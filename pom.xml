@@ -10,7 +10,7 @@
 
     <groupId>com.sproutigy.commons</groupId>
     <artifactId>rawdata</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>Sproutigy Java Commons RawData</name>
     <description>JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
