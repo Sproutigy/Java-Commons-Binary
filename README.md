@@ -40,14 +40,14 @@ Plus some additional methods:
 String content = RawData.fromFile(file).asStringUTF8();
 ```
 
-##### Make input stream from a string 
+##### Make input stream from a string
 ```java
 InputStream stream = RawData.fromStringASCII("HELLO").asStream();
 ```
 
-##### Write string to output stream
+##### Write string to an output stream
 ```java
-RawData.fromStringASCII("HELLO").writeTo(outputStream);
+RawData.fromStringASCII("HELLO").toStream(outputStream);
 ```
 
 ##### Count length of a stream
