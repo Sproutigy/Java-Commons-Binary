@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sproutigy</groupId>
+        <artifactId>opensource-parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>com.sproutigy.commons</groupId>
+    <artifactId>rawdata</artifactId>
+    <version>1.0.0</version>
+
+    <name>Sproutigy Java Commons RawData</name>
+    <description>JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
+    <url>https://github.com/Sproutigy/Java-Commons-RawData</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <url>https://github.com/Sproutigy/Java-Commons-RawData/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <email>dev@lukeahead.net</email>
+            <name>Lucas Nawojczyk</name>
+            <url>http://www.lukeahead.net/</url>
+            <id>LukeAheadNET</id>
+        </developer>
+    </developers>
+
+    <properties>
+        <java.version>1.7</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <scm>
+        <connection>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</connection>
+        <url>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</url>
+        <developerConnection>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</developerConnection>
+    </scm>
+
+</project>
