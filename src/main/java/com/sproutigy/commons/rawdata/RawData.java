@@ -127,7 +127,7 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         return ((ByteBuffer)ByteBuffer.allocate(Character.SIZE / BITS_PER_BYTE).put(asByteArray(false)).flip()).getChar();
     }
 
-    public String toTempFile(boolean modifiable) throws IOException {
+    public String toTempFile() throws IOException {
         File file = File.createTempFile(UUID.randomUUID().toString(), ".rawdata.tmp");
         file.deleteOnExit();
         toFile(file);

@@ -31,11 +31,8 @@ public class TempFileRawData extends FileRawData {
     }
 
     @Override
-    public String toTempFile(boolean modifiable) throws IOException {
-        if (!modifiable) {
-            return getFile().getAbsolutePath();
-        }
-        return super.toTempFile(true);
+    public String toTempFile() throws IOException {
+        return getFile().getAbsolutePath();
     }
 
     @Override

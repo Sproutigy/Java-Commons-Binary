@@ -44,7 +44,7 @@ public class RawDataTest {
     @Test
     public void testSubrange() throws IOException {
         assertEquals("ello", RawData.fromStringASCII("Hello World").subrange(1, 4).asStringASCII());
-        String file = RawData.fromStringASCII("ABCDEFGHIJK").toTempFile(false);
+        String file = RawData.fromStringASCII("ABCDEFGHIJK").toTempFile();
         assertEquals("BC", RawData.fromFile(file).subrange(1,2).asStringASCII());
     }
 }

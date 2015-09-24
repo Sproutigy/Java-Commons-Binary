@@ -26,7 +26,7 @@ String UTF-8 | `RawData.fromStringUTF8(s)` | `String asStringUTF8()`
 String UTF-16 | `RawData.fromStringUTF16(s)` | `String asStringUTF16()`
 String UTF-32 | `RawData.fromStringUTF32(s)` | `String asStringUTF32()`
 Stream | `RawData.fromStream(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
-File | `RawData.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile(boolean modifiable)`
+File | `RawData.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
 
 Plus some additional methods:
 - `subrange(offset, length)` returns subrange of current RawData
