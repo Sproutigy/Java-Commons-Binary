@@ -203,7 +203,7 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         }
         long curLength = length();
         if (curLength >= 0 && (length-offset) > curLength) {
-            throw new IndexOutOfBoundsException("Outside data scope");
+            throw new IndexOutOfBoundsException("Out of data range");
         }
 
         byte[] bytes = asByteArray(false);

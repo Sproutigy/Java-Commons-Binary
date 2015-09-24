@@ -29,4 +29,16 @@ public abstract class AbstractStreamableRawData extends RawData {
     @Override
     public abstract InputStream asStream() throws IOException;
 
+    @Override
+    public RawData subrange(long offset, long length) throws IOException {
+        try(InputStream stream = asStream()) {
+            long skipped = stream.skip(offset);
+            if (skipped < offset) {
+                throw new IndexOutOfBoundsException("Out of data range");
+            }
+
+            return RawData.fromByteArray(readBytesFromStream(stream, length));
+        }
+    }
+
 }
