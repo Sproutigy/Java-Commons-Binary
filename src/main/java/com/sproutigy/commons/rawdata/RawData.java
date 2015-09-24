@@ -33,7 +33,7 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
 
 
     public boolean hasLength() throws IOException {
-        return length == LENGTH_UNSPECIFIED;
+        return length != LENGTH_UNSPECIFIED;
     }
 
     public final long length() throws IOException {
@@ -149,10 +149,17 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
     }
 
     public void toStream(OutputStream out) throws IOException {
+        byte[] buffer;
+        if (hasLength() && length() < 4096) {
+            buffer = new byte[(int)length()];
+        } else {
+            buffer = new byte[4096];
+        }
+
         try(InputStream in = asStream()) {
-            int readbyte;
-            while ((readbyte = in.read()) != EOF) {
-                out.write(readbyte);
+            int len;
+            while ((len = in.read(buffer)) != EOF) {
+                out.write(buffer, 0, len);
             }
         }
     }

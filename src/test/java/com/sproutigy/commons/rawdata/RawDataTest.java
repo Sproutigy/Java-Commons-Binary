@@ -35,7 +35,8 @@ public class RawDataTest {
         File file = Files.createTempFile("", ".tmp").toFile().getAbsoluteFile();
         file.deleteOnExit();
         try(FileOutputStream output = new FileOutputStream(file)) {
-            output.write("Hello World".getBytes("UTF-8"));
+            output.write("Hello".getBytes("UTF-8"));
+            RawData.fromStringASCII(" World").toStream(output);
         }
         assertEquals("Hello World", RawData.fromFile(file).asStringUTF8());
     }
