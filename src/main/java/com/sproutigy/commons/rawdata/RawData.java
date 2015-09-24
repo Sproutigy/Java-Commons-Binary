@@ -193,11 +193,11 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         }
     }
 
-    public RawData subdata(long offset) throws IOException {
-        return subdata(offset, LENGTH_UNSPECIFIED);
+    public RawData subrange(long offset) throws IOException {
+        return subrange(offset, LENGTH_UNSPECIFIED);
     }
 
-    public RawData subdata(long offset, long length) throws IOException {
+    public RawData subrange(long offset, long length) throws IOException {
         if (offset > Integer.MAX_VALUE || length > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Offset and/or length higher than Integer.MAX_VALUE");
         }

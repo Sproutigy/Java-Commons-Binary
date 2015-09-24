@@ -87,7 +87,7 @@ public class ByteArrayRawData extends RawData {
     }
 
     @Override
-    public RawData subdata(long offset, long length) throws IOException {
+    public RawData subrange(long offset, long length) throws IOException {
         if (offset > Integer.MAX_VALUE || length > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Offset and/or length higher than Integer.MAX_VALUE");
         }

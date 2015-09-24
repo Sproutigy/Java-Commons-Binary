@@ -55,6 +55,12 @@ RawData.fromStringASCII("HELLO").writeTo(outputStream);
 long len = RawData.fromStream(inputStream).length();
 ```
 
+#### Use subrange of data
+```java
+RawData.fromFile(file).subrange(0,5).asStringUTF8();
+```
+
+
 ##### Empty data
 ```java
 byte[] emptyByteArray = RawData.EMPTY.asByteArray();

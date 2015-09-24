@@ -41,4 +41,8 @@ public class RawDataTest {
         assertEquals("Hello World", RawData.fromFile(file).asStringUTF8());
     }
 
+    @Test
+    public void testSubrange() throws IOException {
+        assertEquals("ello", RawData.fromStringASCII("Hello World").subrange(1, 4).asStringASCII());
+    }
 }
