@@ -1,5 +1,5 @@
 # Sproutigy Java Commons RawData
-JVM library that provides consitent abstraction level over data from byte arrays, byte buffers, streams and files.
+JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.
 It allows adaptation or conversion from one type to another and maintain single data source layer instead of different low-level types.
 This library provides `RawData` abstract class along with multiple implementors (but you can provide your own), as also `RawDataBuilder` and `RawDataMap` interface with default implementation.
 

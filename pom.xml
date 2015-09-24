@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>Sproutigy Java Commons RawData</name>
-    <description>JVM library that provides consitent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
+    <description>JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
     <url>https://github.com/Sproutigy/Java-Commons-RawData</url>
 
     <licenses>
