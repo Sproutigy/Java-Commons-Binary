@@ -29,7 +29,7 @@ Stream | `RawData.fromStream(inputStream)` | `InputStream asStream()` or `void t
 File | `RawData.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile(boolean modifiable)`
 
 Plus some additional methods:
-- `subdata(offset, length)` returns subrange of current RawData
+- `subrange(offset, length)` returns subrange of current RawData
 - `hasLength()` returns `true` when length is available or `false` when it is required to read whole data source to count bytes
 - `length()` returns length of data in bytes 
 
@@ -74,7 +74,7 @@ When data is rather small it is kept in memory. To prevent OutOfMemoryException,
 
 #### Example
 ```java
-RawData myData = new RawDataBuilder().appendUTF8("HELL").append( (byte)79 ).build();
+RawData myData = new RawDataBuilder().fromStringASCII("HELL").append( (byte)79 ).build();
 ```
 
 ### RawDataMap
@@ -97,6 +97,9 @@ To use as a dependency add to your `pom.xml` into `<dependencies>` section:
 <dependency>
     <groupId>com.sproutigy.commons</groupId>
     <artifactId>rawdata</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>RELEASE</version>
 </dependency>
 ```
+
+## More
+For more information and commercial support visit [Sproutigy](http://www.sproutigy.com/opensource)
