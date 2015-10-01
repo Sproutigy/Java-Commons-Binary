@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class ByteArrayRawData extends RawData {
 
@@ -100,7 +100,7 @@ public class ByteArrayRawData extends RawData {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         bytes = null;
         offset = 0;
         length = 0;

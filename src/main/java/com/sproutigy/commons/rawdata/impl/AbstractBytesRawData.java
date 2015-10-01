@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public abstract class AbstractBytesRawData extends RawData {
 

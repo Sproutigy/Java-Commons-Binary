@@ -1,0 +1,9 @@
+Version 1.1.0 (2015-10-01):
+- Java 6 support
+- Dropped methods that were using Java 7 Path class (use File or path String instead)
+- OSGi bundle
+- POM updates
+- Documentation updates
+
+
+Version 1.0.0 (2015-09-25) - Initial release

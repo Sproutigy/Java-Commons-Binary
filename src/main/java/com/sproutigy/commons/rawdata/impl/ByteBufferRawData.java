@@ -5,12 +5,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class ByteBufferRawData extends AbstractBytesRawData {
 
     private ByteBuffer byteBuffer;
-
 
     public ByteBufferRawData(ByteBuffer byteBuffer) {
         super(byteBuffer.limit());

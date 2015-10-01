@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class RawDataBuilder extends OutputStream {
 

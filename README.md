@@ -4,10 +4,10 @@ It allows adaptation or conversion from one type to another and maintain single 
 This library provides `RawData` abstract class along with multiple implementors (but you can provide your own), as also `RawDataBuilder` and `RawDataMap` interface with default implementation.
 
 
-## Requirements
-Requires Java 7 or later.
-Build with Maven 3 or later.
-
+## Requirements and dependencies
+Requires Java 6 or later.
+This library has following dependency:
+- [SLF4J](http://www.slf4j.org/)
 
 ## Elements
 

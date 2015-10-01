@@ -7,13 +7,12 @@ import com.sproutigy.commons.rawdata.impl.FileRawData;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.util.UUID;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
-public abstract class RawData implements AutoCloseable, Comparable<RawData>, Cloneable {
+public abstract class RawData implements Closeable, Comparable<RawData>, Cloneable {
 
     public static final long LENGTH_UNSPECIFIED = -1;
 
@@ -51,10 +50,13 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
 
     protected long provideLength() throws IOException {
         int counter = 0;
-        try(InputStream in = asStream()) {
+        InputStream in = asStream();
+        try {
             while (in.read() != EOF) {
                 counter++;
             }
+        } finally {
+            in.close();
         }
         return counter;
     }
@@ -139,13 +141,12 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
     }
 
     public void toFile(File file) throws IOException {
-        try(OutputStream out = new FileOutputStream(file)) {
+        OutputStream out = new FileOutputStream(file);
+        try {
             toStream(out);
+        } finally {
+            out.close();
         }
-    }
-
-    public void toFile(Path path) throws IOException {
-        toFile(path.toFile());
     }
 
     public void toStream(OutputStream out) throws IOException {
@@ -156,11 +157,14 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
             buffer = new byte[4096];
         }
 
-        try(InputStream in = asStream()) {
+        InputStream in = asStream();
+        try {
             int len;
             while ((len = in.read(buffer)) != EOF) {
                 out.write(buffer, 0, len);
             }
+        } finally {
+            in.close();
         }
     }
 
@@ -179,12 +183,15 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
 
         if (length < 0) {
             int curOffset = targetOffset;
-            try(InputStream in = asStream()) {
+            InputStream in = asStream();
+            try {
                 int readbyte;
                 while ((readbyte = in.read()) != EOF) {
                     target[curOffset] = (byte)readbyte;
                     curOffset++;
                 }
+            } finally {
+                in.close();
             }
         }
         else
@@ -223,11 +230,14 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         int result = 1;
 
         try {
-            try(InputStream in = asStream()) {
+            InputStream in = asStream();
+            try {
                 int readbyte;
                 while ((readbyte = in.read()) != EOF) {
                     result = 31 * result + readbyte;
                 }
+            } finally {
+                in.close();
             }
         } catch(IOException e) {
             throw new RuntimeException(e);
@@ -242,8 +252,10 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         if (this == other) return 0;
 
         try {
-            try(InputStream thisStream = asStream()) {
-                try(InputStream otherStream = other.asStream()) {
+            InputStream thisStream = asStream();
+            try {
+                InputStream otherStream = other.asStream();
+                try {
                     while(true) {
                         int thisReadByte = thisStream.read();
                         int otherReadByte = otherStream.read();
@@ -253,7 +265,11 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
                         if (otherReadByte == EOF) return 1;
                         return thisReadByte - otherReadByte;
                     }
+                } finally {
+                    otherStream.close();
                 }
+            } finally {
+                thisStream.close();
             }
         } catch(IOException e) {
             throw new RuntimeException(e);
@@ -261,7 +277,7 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
 
     }
 
@@ -385,10 +401,6 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
         return new FileRawData(file);
     }
 
-    public static RawData fromFile(Path path) {
-        return new FileRawData(path);
-    }
-
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     protected static final InputStream EMPTY_INPUT_STREAM = new InputStream() {
@@ -415,11 +427,14 @@ public abstract class RawData implements AutoCloseable, Comparable<RawData>, Clo
             try {
                 long otherLength = other.length();
                 if (otherLength < 0) {
-                    try (InputStream in = other.asStream()) {
+                    InputStream in = other.asStream();
+                    try {
                         if (in.read() == EOF)
                             return 0;
                         else
                             return -1;
+                    } finally {
+                        in.close();
                     }
                 } else {
                     if (otherLength > 0) return -1;

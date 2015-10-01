@@ -5,12 +5,14 @@
     <parent>
         <groupId>com.sproutigy</groupId>
         <artifactId>opensource-parent</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
 
     <groupId>com.sproutigy.commons</groupId>
     <artifactId>rawdata</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
+
+    <packaging>bundle</packaging>
 
     <name>Sproutigy Java Commons RawData</name>
     <description>JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
@@ -34,13 +36,19 @@
         <developer>
             <email>dev@lukeahead.net</email>
             <name>Lucas Nawojczyk</name>
-            <url>http://www.lukeahead.net/</url>
+            <url>http://www.lukeahead.net</url>
             <id>LukeAheadNET</id>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <organization>Sproutigy</organization>
+            <organizationUrl>http://www.sproutigy.com</organizationUrl>
         </developer>
     </developers>
 
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.6</java.version>
     </properties>
 
     <dependencies>

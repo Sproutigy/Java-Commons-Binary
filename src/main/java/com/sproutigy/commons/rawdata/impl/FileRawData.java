@@ -3,11 +3,9 @@ package com.sproutigy.commons.rawdata.impl;
 import com.sproutigy.commons.rawdata.RawData;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class FileRawData extends AbstractStreamableRawData {
 
@@ -16,10 +14,6 @@ public class FileRawData extends AbstractStreamableRawData {
 
     public FileRawData(String path) {
         this(new File(path));
-    }
-
-    public FileRawData(Path path) {
-        this(path.toFile());
     }
 
     public FileRawData(File file) {
@@ -42,17 +36,14 @@ public class FileRawData extends AbstractStreamableRawData {
         return file.getPath();
     }
 
-    public Path getPath() {
-        return Paths.get(getPathString());
-    }
-
     public File getFile() {
         return file;
     }
 
     @Override
     public RawData subrange(long offset, long length) throws IOException {
-        try(RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r")) {
+        final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
+        try {
             randomAccessFile.seek(offset);
             InputStream streamAdapter = new InputStream() {
                 @Override
@@ -61,6 +52,8 @@ public class FileRawData extends AbstractStreamableRawData {
                 }
             };
             return RawData.fromByteArray(readBytesFromStream(streamAdapter, length));
+        } finally {
+            randomAccessFile.close();
         }
     }
 
