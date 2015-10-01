@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class RawDataBuilderTest {
 

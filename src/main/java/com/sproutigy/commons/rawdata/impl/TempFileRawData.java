@@ -2,10 +2,9 @@ package com.sproutigy.commons.rawdata.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class TempFileRawData extends FileRawData {
 
@@ -13,12 +12,6 @@ public class TempFileRawData extends FileRawData {
 
 
     public TempFileRawData(String path, boolean deleteOnClose, boolean deleteOnExit) {
-        super(path);
-        if (deleteOnExit) getFile().deleteOnExit();
-        this.deleteOnClose = deleteOnClose;
-    }
-
-    public TempFileRawData(Path path, boolean deleteOnClose, boolean deleteOnExit) {
         super(path);
         if (deleteOnExit) getFile().deleteOnExit();
         this.deleteOnClose = deleteOnClose;
@@ -36,7 +29,7 @@ public class TempFileRawData extends FileRawData {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         super.close();
         if (deleteOnClose) {
             if (!getFile().delete()) {

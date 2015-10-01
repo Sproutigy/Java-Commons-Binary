@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @author LukeAhead.net
+ * @author LukeAheadNET
  */
 public class DefaultRawDataMap extends LinkedHashMap<RawData, RawData> implements RawDataMap {
 
