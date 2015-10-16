@@ -1,30 +1,30 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
-import com.sproutigy.commons.rawdata.RawData;
+import com.sproutigy.commons.binary.Binary;
 
 import java.io.*;
 
 /**
  * @author LukeAheadNET
  */
-public class FileRawData extends AbstractStreamableRawData {
+public class FileBinary extends AbstractStreamableBinary {
 
     private File file;
 
 
-    public FileRawData(String path) {
+    public FileBinary(String path) {
         this(new File(path));
     }
 
-    public FileRawData(File file) {
+    public FileBinary(File file) {
         super(file.length());
         this.file = file;
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof FileRawData) {
-            if (getFile().equals(((FileRawData) other).getFile())) {
+        if (other instanceof FileBinary) {
+            if (getFile().equals(((FileBinary) other).getFile())) {
                 return true;
             }
         }
@@ -41,7 +41,7 @@ public class FileRawData extends AbstractStreamableRawData {
     }
 
     @Override
-    public RawData subrange(long offset, long length) throws IOException {
+    public Binary subrange(long offset, long length) throws IOException {
         final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
         try {
             randomAccessFile.seek(offset);
@@ -51,7 +51,7 @@ public class FileRawData extends AbstractStreamableRawData {
                     return randomAccessFile.read();
                 }
             };
-            return RawData.fromByteArray(readBytesFromStream(streamAdapter, length));
+            return Binary.fromByteArray(readBytesFromStream(streamAdapter, length));
         } finally {
             randomAccessFile.close();
         }

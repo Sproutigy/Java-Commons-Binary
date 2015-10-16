@@ -1,4 +1,4 @@
-package com.sproutigy.commons.rawdata;
+package com.sproutigy.commons.binary;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,33 +6,33 @@ import java.util.Map;
 /**
  * @author LukeAheadNET
  */
-public class DefaultRawDataMap extends LinkedHashMap<RawData, RawData> implements RawDataMap {
+public class DefaultBinaryMap extends LinkedHashMap<Binary, Binary> implements BinaryMap {
 
-    public DefaultRawDataMap(int initialCapacity, float loadFactor) {
+    public DefaultBinaryMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
 
-    public DefaultRawDataMap(int initialCapacity) {
+    public DefaultBinaryMap(int initialCapacity) {
         super(initialCapacity);
     }
 
-    public DefaultRawDataMap() {
+    public DefaultBinaryMap() {
     }
 
-    public DefaultRawDataMap(Map<? extends RawData, ? extends RawData> m) {
+    public DefaultBinaryMap(Map<? extends Binary, ? extends Binary> m) {
         super(m);
     }
 
-    public DefaultRawDataMap(int initialCapacity, float loadFactor, boolean accessOrder) {
+    public DefaultBinaryMap(int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
     }
 
-    public DefaultRawDataMap(RawData key, RawData value) {
+    public DefaultBinaryMap(Binary key, Binary value) {
         this(1, 1);
         put(key, value);
     }
 
-    public DefaultRawDataMap(RawData... allKeysAndValues) {
+    public DefaultBinaryMap(Binary... allKeysAndValues) {
         this(allKeysAndValues.length/2, 1);
 
         if (allKeysAndValues.length%2 != 0) {

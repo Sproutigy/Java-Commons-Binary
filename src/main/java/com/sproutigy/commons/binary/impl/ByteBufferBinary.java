@@ -1,4 +1,4 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,11 +7,11 @@ import java.nio.ByteBuffer;
 /**
  * @author LukeAheadNET
  */
-public class ByteBufferRawData extends AbstractBytesRawData {
+public class ByteBufferBinary extends AbstractBytesBinary {
 
     private ByteBuffer byteBuffer;
 
-    public ByteBufferRawData(ByteBuffer byteBuffer) {
+    public ByteBufferBinary(ByteBuffer byteBuffer) {
         super(byteBuffer.limit());
         this.byteBuffer = byteBuffer;
     }

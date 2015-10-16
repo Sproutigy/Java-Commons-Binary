@@ -1,6 +1,6 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
-import com.sproutigy.commons.rawdata.RawData;
+import com.sproutigy.commons.binary.Binary;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,12 +9,12 @@ import java.io.InputStream;
 /**
  * @author LukeAheadNET
  */
-public abstract class AbstractBytesRawData extends RawData {
+public abstract class AbstractBytesBinary extends Binary {
 
-    public AbstractBytesRawData() {
+    public AbstractBytesBinary() {
     }
 
-    public AbstractBytesRawData(long length) {
+    public AbstractBytesBinary(long length) {
         super(length);
     }
 

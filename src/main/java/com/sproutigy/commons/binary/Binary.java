@@ -1,8 +1,8 @@
-package com.sproutigy.commons.rawdata;
+package com.sproutigy.commons.binary;
 
-import com.sproutigy.commons.rawdata.impl.ByteArrayRawData;
-import com.sproutigy.commons.rawdata.impl.ByteBufferRawData;
-import com.sproutigy.commons.rawdata.impl.FileRawData;
+import com.sproutigy.commons.binary.impl.ByteArrayBinary;
+import com.sproutigy.commons.binary.impl.ByteBufferBinary;
+import com.sproutigy.commons.binary.impl.FileBinary;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * @author LukeAheadNET
  */
-public abstract class RawData implements Closeable, Comparable<RawData>, Cloneable {
+public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable {
 
     public static final long LENGTH_UNSPECIFIED = -1;
 
@@ -24,9 +24,9 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
     protected long length = LENGTH_UNSPECIFIED;
 
 
-    protected RawData() { }
+    protected Binary() { }
 
-    protected RawData(long length) {
+    protected Binary(long length) {
         this.length = length;
     }
 
@@ -130,7 +130,7 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
     }
 
     public String toTempFile() throws IOException {
-        File file = File.createTempFile(UUID.randomUUID().toString(), ".rawdata.tmp");
+        File file = File.createTempFile(UUID.randomUUID().toString(), ".binary.tmp");
         file.deleteOnExit();
         toFile(file);
         return file.getAbsolutePath();
@@ -200,11 +200,11 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
         }
     }
 
-    public RawData subrange(long offset) throws IOException {
+    public Binary subrange(long offset) throws IOException {
         return subrange(offset, LENGTH_UNSPECIFIED);
     }
 
-    public RawData subrange(long offset, long length) throws IOException {
+    public Binary subrange(long offset, long length) throws IOException {
         if (offset > Integer.MAX_VALUE || length > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Offset and/or length higher than Integer.MAX_VALUE");
         }
@@ -215,14 +215,14 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
 
         byte[] bytes = asByteArray(false);
         int newLength = length > 0 ? (int)length : (int)(bytes.length-offset);
-        return new ByteArrayRawData(bytes, (int)offset, newLength);
+        return new ByteArrayBinary(bytes, (int)offset, newLength);
     }
 
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof RawData)) return false;
-        return compareTo((RawData)other) == 0;
+        if (!(other instanceof Binary)) return false;
+        return compareTo((Binary)other) == 0;
     }
 
     @Override
@@ -242,12 +242,12 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
-        
+
         return result;
     }
 
     @Override
-    public int compareTo(RawData other) {
+    public int compareTo(Binary other) {
         if (other == null) return 1;
         if (this == other) return 0;
 
@@ -317,88 +317,88 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
         }
     }
 
-    public static RawData fromStream(InputStream in) throws IOException {
+    public static Binary fromStream(InputStream in) throws IOException {
         return fromByteArray(readBytesFromStream(in));
     }
 
-    public static RawData fromStream(InputStream in, long length) throws IOException {
+    public static Binary fromStream(InputStream in, long length) throws IOException {
         return fromByteArray(readBytesFromStream(in, length));
     }
 
-    public static RawData fromByte(byte value) {
+    public static Binary fromByte(byte value) {
         return fromByteArray(new byte[]{value});
     }
 
-    public static RawData fromShort(short value) {
+    public static Binary fromShort(short value) {
         return fromByteBuffer(ByteBuffer.allocate(Short.SIZE / BITS_PER_BYTE).putShort(value));
     }
 
-    public static RawData fromInteger(int value) {
+    public static Binary fromInteger(int value) {
         return fromByteBuffer(ByteBuffer.allocate(Integer.SIZE / BITS_PER_BYTE).putInt(value));
     }
 
-    public static RawData fromLong(long value) {
+    public static Binary fromLong(long value) {
         return fromByteBuffer(ByteBuffer.allocate(Long.SIZE / BITS_PER_BYTE).putLong(value));
     }
 
-    public static RawData fromFloat(float value) {
+    public static Binary fromFloat(float value) {
         return fromByteBuffer(ByteBuffer.allocate(Float.SIZE / BITS_PER_BYTE).putFloat(value));
     }
 
-    public static RawData fromDouble(double value) {
+    public static Binary fromDouble(double value) {
         return fromByteBuffer(ByteBuffer.allocate(Double.SIZE / BITS_PER_BYTE).putDouble(value));
     }
 
-    public static RawData fromCharacter(char value) {
+    public static Binary fromCharacter(char value) {
         return fromByteBuffer(ByteBuffer.allocate(Character.SIZE / BITS_PER_BYTE).putChar(value));
     }
 
-    public static RawData fromByteArray(byte[] bytes) {
-        return new ByteArrayRawData(bytes);
+    public static Binary fromByteArray(byte[] bytes) {
+        return new ByteArrayBinary(bytes);
     }
 
-    public static RawData fromByteArray(byte[] bytes, int offset, int length) {
-        return new ByteArrayRawData(bytes, offset, length);
+    public static Binary fromByteArray(byte[] bytes, int offset, int length) {
+        return new ByteArrayBinary(bytes, offset, length);
     }
 
-    public static RawData fromByteBuffer(ByteBuffer byteBuffer) {
-        return new ByteBufferRawData(byteBuffer);
+    public static Binary fromByteBuffer(ByteBuffer byteBuffer) {
+        return new ByteBufferBinary(byteBuffer);
     }
 
-    public static RawData fromStringASCII(String s) {
+    public static Binary fromStringASCII(String s) {
         return fromString(s, "US-ASCII");
     }
 
-    public static RawData fromStringUTF8(String s) {
+    public static Binary fromStringUTF8(String s) {
         return fromString(s, "UTF-8");
     }
 
-    public static RawData fromStringUTF16(String s) {
+    public static Binary fromStringUTF16(String s) {
         return fromString(s, "UTF-16");
     }
 
-    public static RawData fromStringUTF32(String s) {
+    public static Binary fromStringUTF32(String s) {
         return fromString(s, "UTF-32");
     }
 
-    public static RawData fromString(String s, Charset charset) {
-        return new ByteArrayRawData(s.getBytes(charset));
+    public static Binary fromString(String s, Charset charset) {
+        return new ByteArrayBinary(s.getBytes(charset));
     }
 
-    public static RawData fromString(String s, String charsetName) {
+    public static Binary fromString(String s, String charsetName) {
         try {
-            return new ByteArrayRawData(s.getBytes(charsetName));
+            return new ByteArrayBinary(s.getBytes(charsetName));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static RawData fromFile(String path) {
-        return new FileRawData(path);
+    public static Binary fromFile(String path) {
+        return new FileBinary(path);
     }
 
-    public static RawData fromFile(File file) {
-        return new FileRawData(file);
+    public static Binary fromFile(File file) {
+        return new FileBinary(file);
     }
 
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -410,7 +410,7 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
         }
     };
 
-    public static final RawData EMPTY = new RawData(0) {
+    public static final Binary EMPTY = new Binary(0) {
 
         @Override
         public byte[] asByteArray(boolean modifiable) throws IOException {
@@ -423,7 +423,7 @@ public abstract class RawData implements Closeable, Comparable<RawData>, Cloneab
         }
 
         @Override
-        public int compareTo(RawData other) {
+        public int compareTo(Binary other) {
             try {
                 long otherLength = other.length();
                 if (otherLength < 0) {

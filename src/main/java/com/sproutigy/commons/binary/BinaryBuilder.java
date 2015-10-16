@@ -1,6 +1,6 @@
-package com.sproutigy.commons.rawdata;
+package com.sproutigy.commons.binary;
 
-import com.sproutigy.commons.rawdata.impl.TempFileRawData;
+import com.sproutigy.commons.binary.impl.TempFileBinary;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -10,17 +10,17 @@ import java.util.UUID;
 /**
  * @author LukeAheadNET
  */
-public class RawDataBuilder extends OutputStream {
+public class BinaryBuilder extends OutputStream {
 
     public static final int DEFAULT_EXPECTED_SIZE = 1024;
     public static final int DEFAULT_MAX_MEMORY_SIZE_BYTES = 50*1024;
     public static final int DEFAULT_MAX_SIZE_BYTES_LIMIT = Integer.MAX_VALUE;
 
-    public RawDataBuilder() {
+    public BinaryBuilder() {
         this(DEFAULT_EXPECTED_SIZE, DEFAULT_MAX_MEMORY_SIZE_BYTES, DEFAULT_MAX_SIZE_BYTES_LIMIT);
     }
 
-    public RawDataBuilder(int expectedSize, int maxMemorySizeBytes, int maxSizeBytesLimit) {
+    public BinaryBuilder(int expectedSize, int maxMemorySizeBytes, int maxSizeBytesLimit) {
         if (expectedSize > maxMemorySizeBytes) {
             try {
                 prepareTempFile();
@@ -40,41 +40,41 @@ public class RawDataBuilder extends OutputStream {
     private int maxSizeBytesLimit;
     private String filePath;
     private OutputStream out;
-    private RawData data = null;
+    private Binary data = null;
 
     public int length() {
         return length;
     }
 
-    public RawDataBuilder append(RawData data) throws IOException {
+    public BinaryBuilder append(Binary data) throws IOException {
         return append(data.asStream());
     }
 
-    public RawDataBuilder append(String string, String charsetName) {
+    public BinaryBuilder append(String string, String charsetName) {
         return append(string.getBytes(Charset.forName(charsetName)));
     }
 
-    public RawDataBuilder appendASCII(String string) {
+    public BinaryBuilder appendASCII(String string) {
         return append(string, "ASCII");
     }
 
-    public RawDataBuilder appendUTF8(String string) {
+    public BinaryBuilder appendUTF8(String string) {
         return append(string, "UTF-8");
     }
 
-    public RawDataBuilder appendUTF16(String string) {
+    public BinaryBuilder appendUTF16(String string) {
         return append(string, "UTF-16");
     }
 
-    public RawDataBuilder appendUTF32(String string) {
+    public BinaryBuilder appendUTF32(String string) {
         return append(string, "UTF-32");
     }
 
-    public RawDataBuilder append(byte[] bytes) {
+    public BinaryBuilder append(byte[] bytes) {
         return append(bytes, 0, bytes.length);
     }
 
-    public RawDataBuilder append(byte[] bytes, int offset, int length) {
+    public BinaryBuilder append(byte[] bytes, int offset, int length) {
         try {
             prepareAppend(length);
             out.write(bytes, offset, length);
@@ -85,7 +85,7 @@ public class RawDataBuilder extends OutputStream {
         }
     }
 
-    public RawDataBuilder append(byte b) {
+    public BinaryBuilder append(byte b) {
         try {
             prepareAppend(1);
             out.write(b);
@@ -96,7 +96,7 @@ public class RawDataBuilder extends OutputStream {
         }
     }
 
-    public RawDataBuilder append(ByteBuffer byteBuffer) {
+    public BinaryBuilder append(ByteBuffer byteBuffer) {
         if (byteBuffer.hasArray()) {
             append(byteBuffer.array(), byteBuffer.arrayOffset(), byteBuffer.limit());
         } else {
@@ -108,9 +108,9 @@ public class RawDataBuilder extends OutputStream {
         return this;
     }
 
-    public RawDataBuilder append(InputStream inputStream) throws IOException {
+    public BinaryBuilder append(InputStream inputStream) throws IOException {
         int b;
-        while( (b = inputStream.read()) != RawData.EOF) {
+        while( (b = inputStream.read()) != Binary.EOF) {
             append((byte)b);
         }
         return this;
@@ -136,20 +136,20 @@ public class RawDataBuilder extends OutputStream {
     }
 
     private void prepareTempFile() throws IOException {
-        File file = File.createTempFile(UUID.randomUUID().toString(), ".rawdata.tmp");
+        File file = File.createTempFile(UUID.randomUUID().toString(), ".binary.tmp");
         file.deleteOnExit();
         filePath = file.getPath();
         if (out != null) out.close();
         out = new FileOutputStream(file);
     }
 
-    public RawData build() {
+    public Binary build() {
         if (data == null) {
             if (filePath != null) {
-                data = new TempFileRawData(filePath, true, false);
+                data = new TempFileBinary(filePath, true, false);
             } else {
                 byte[] bytes = ((ByteArrayOutputStream) out).toByteArray();
-                data = RawData.fromByteArray(bytes);
+                data = Binary.fromByteArray(bytes);
             }
         }
 

@@ -1,6 +1,6 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
-import com.sproutigy.commons.rawdata.RawData;
+import com.sproutigy.commons.binary.Binary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,12 +8,12 @@ import java.io.InputStream;
 /**
  * @author LukeAheadNET
  */
-public abstract class AbstractStreamableRawData extends RawData {
+public abstract class AbstractStreamableBinary extends Binary {
 
-    public AbstractStreamableRawData() {
+    public AbstractStreamableBinary() {
     }
 
-    public AbstractStreamableRawData(long length) {
+    public AbstractStreamableBinary(long length) {
         super(length);
     }
 
@@ -33,7 +33,7 @@ public abstract class AbstractStreamableRawData extends RawData {
     public abstract InputStream asStream() throws IOException;
 
     @Override
-    public RawData subrange(long offset, long length) throws IOException {
+    public Binary subrange(long offset, long length) throws IOException {
         InputStream stream = asStream();
         try {
             long skipped = stream.skip(offset);
@@ -41,7 +41,7 @@ public abstract class AbstractStreamableRawData extends RawData {
                 throw new IndexOutOfBoundsException("Out of data range");
             }
 
-            return RawData.fromByteArray(readBytesFromStream(stream, length));
+            return Binary.fromByteArray(readBytesFromStream(stream, length));
         } finally {
             stream.close();
         }

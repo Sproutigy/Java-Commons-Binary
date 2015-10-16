@@ -1,6 +1,6 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
-import com.sproutigy.commons.rawdata.RawData;
+import com.sproutigy.commons.binary.Binary;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,19 +11,19 @@ import java.util.Arrays;
 /**
  * @author LukeAheadNET
  */
-public class ByteArrayRawData extends RawData {
+public class ByteArrayBinary extends Binary {
 
     private byte[] bytes;
     private int offset;
 
 
-    public ByteArrayRawData(byte[] bytes) {
+    public ByteArrayBinary(byte[] bytes) {
         super(bytes.length);
         this.bytes = bytes;
         this.offset = 0;
     }
 
-    public ByteArrayRawData(byte[] bytes, int offset, int length) {
+    public ByteArrayBinary(byte[] bytes, int offset, int length) {
         super(length);
         this.bytes = bytes;
         this.offset = offset;
@@ -39,11 +39,11 @@ public class ByteArrayRawData extends RawData {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ByteArrayRawData)) {
+        if (!(other instanceof ByteArrayBinary)) {
             return super.equals(other);
         }
 
-        return Arrays.equals(asByteArray(false), ((ByteArrayRawData) other).asByteArray(false));
+        return Arrays.equals(asByteArray(false), ((ByteArrayBinary) other).asByteArray(false));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ByteArrayRawData extends RawData {
     }
 
     @Override
-    public RawData subrange(long offset, long length) throws IOException {
+    public Binary subrange(long offset, long length) throws IOException {
         if (offset > Integer.MAX_VALUE || length > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Offset and/or length higher than Integer.MAX_VALUE");
         }
@@ -96,7 +96,7 @@ public class ByteArrayRawData extends RawData {
         }
 
         int newLength = length >= 0 ? (int)length : this.bytes.length-(int)(this.offset+offset);
-        return new ByteArrayRawData(this.bytes, (int)(this.offset + offset), newLength);
+        return new ByteArrayBinary(this.bytes, (int)(this.offset + offset), newLength);
     }
 
     @Override

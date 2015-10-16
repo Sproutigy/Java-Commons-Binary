@@ -1,4 +1,4 @@
-package com.sproutigy.commons.rawdata.impl;
+package com.sproutigy.commons.binary.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,18 +6,18 @@ import java.io.IOException;
 /**
  * @author LukeAheadNET
  */
-public class TempFileRawData extends FileRawData {
+public class TempFileBinary extends FileBinary {
 
     private boolean deleteOnClose;
 
 
-    public TempFileRawData(String path, boolean deleteOnClose, boolean deleteOnExit) {
+    public TempFileBinary(String path, boolean deleteOnClose, boolean deleteOnExit) {
         super(path);
         if (deleteOnExit) getFile().deleteOnExit();
         this.deleteOnClose = deleteOnClose;
     }
 
-    public TempFileRawData(File file, boolean deleteOnClose, boolean deleteOnExit) {
+    public TempFileBinary(File file, boolean deleteOnClose, boolean deleteOnExit) {
         super(file);
         if (deleteOnExit) file.deleteOnExit();
         this.deleteOnClose = deleteOnClose;

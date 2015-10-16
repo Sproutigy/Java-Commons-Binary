@@ -1,4 +1,4 @@
-package com.sproutigy.commons.rawdata;
+package com.sproutigy.commons.binary;
 
 import org.junit.Test;
 
@@ -13,21 +13,21 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author LukeAheadNET
  */
-public class RawDataTest {
+public class BinaryTest {
 
     @Test
     public void testEmpty() throws IOException {
-        assertEquals(0, RawData.EMPTY.length());
-        assertEquals(0, RawData.EMPTY.asByteArray().length);
+        assertEquals(0, Binary.EMPTY.length());
+        assertEquals(0, Binary.EMPTY.asByteArray().length);
     }
 
     @Test
     public void testStrings() throws IOException {
 
-        RawData dataFromString = RawData.fromByteArray("HELLO".getBytes("UTF-8"));
+        Binary dataFromString = Binary.fromByteArray("HELLO".getBytes("UTF-8"));
         assertEquals(5, dataFromString.length());
         assertArrayEquals("HELLO".getBytes("UTF-8"), dataFromString.asByteArray());
-        assertEquals("HELLO", RawData.fromStringASCII("HELLO").asStringASCII());
+        assertEquals("HELLO", Binary.fromStringASCII("HELLO").asStringASCII());
     }
 
     @Test
@@ -37,17 +37,17 @@ public class RawDataTest {
         FileOutputStream output = new FileOutputStream(file);
         try {
             output.write("Hello".getBytes("UTF-8"));
-            RawData.fromStringASCII(" World").toStream(output);
+            Binary.fromStringASCII(" World").toStream(output);
         } finally {
             output.close();
         }
-        assertEquals("Hello World", RawData.fromFile(file).asStringUTF8());
+        assertEquals("Hello World", Binary.fromFile(file).asStringUTF8());
     }
 
     @Test
     public void testSubrange() throws IOException {
-        assertEquals("ello", RawData.fromStringASCII("Hello World").subrange(1, 4).asStringASCII());
-        String file = RawData.fromStringASCII("ABCDEFGHIJK").toTempFile();
-        assertEquals("BC", RawData.fromFile(file).subrange(1,2).asStringASCII());
+        assertEquals("ello", Binary.fromStringASCII("Hello World").subrange(1, 4).asStringASCII());
+        String file = Binary.fromStringASCII("ABCDEFGHIJK").toTempFile();
+        assertEquals("BC", Binary.fromFile(file).subrange(1,2).asStringASCII());
     }
 }

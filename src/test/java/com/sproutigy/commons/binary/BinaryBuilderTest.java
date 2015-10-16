@@ -1,7 +1,7 @@
-package com.sproutigy.commons.rawdata;
+package com.sproutigy.commons.binary;
 
-import com.sproutigy.commons.rawdata.impl.ByteArrayRawData;
-import com.sproutigy.commons.rawdata.impl.TempFileRawData;
+import com.sproutigy.commons.binary.impl.ByteArrayBinary;
+import com.sproutigy.commons.binary.impl.TempFileBinary;
 import org.junit.Test;
 
 import java.io.File;
@@ -12,29 +12,29 @@ import static org.junit.Assert.*;
 /**
  * @author LukeAheadNET
  */
-public class RawDataBuilderTest {
+public class BinaryBuilderTest {
 
     @Test
     public void testBuildSmallData() throws IOException {
-        RawDataBuilder builder = new RawDataBuilder().append("HELLO", "UTF-8").append((byte) 0);
+        BinaryBuilder builder = new BinaryBuilder().append("HELLO", "UTF-8").append((byte) 0);
         assertEquals(6, builder.length());
-        RawData data = builder.build();
+        Binary data = builder.build();
         assertEquals(6, data.length());
-        assertEquals(true, data instanceof ByteArrayRawData);
+        assertEquals(true, data instanceof ByteArrayBinary);
     }
 
     @Test
     public void testBuildBigData() throws Exception {
         int length = 1000;
-        RawDataBuilder builder = new RawDataBuilder(0, 500, 1000);
+        BinaryBuilder builder = new BinaryBuilder(0, 500, 1000);
         for (int i=0; i<length; i++) {
             builder.write(i % 256);
         }
         assertEquals(length, builder.length());
-        RawData data = builder.build();
+        Binary data = builder.build();
         assertEquals(length, data.length());
-        assertEquals(true, data instanceof TempFileRawData);
-        File file = ((TempFileRawData)data).getFile();
+        assertEquals(true, data instanceof TempFileBinary);
+        File file = ((TempFileBinary)data).getFile();
         assertTrue(file.exists());
         data.close();
         assertFalse(file.exists());
