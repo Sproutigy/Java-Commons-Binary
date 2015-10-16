@@ -1,9 +1,9 @@
 package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
+import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -19,12 +19,12 @@ public abstract class AbstractBytesBinary extends Binary {
     }
 
     @Override
-    protected long provideLength() throws IOException {
+    protected long provideLength() throws BinaryException {
         return asByteArray(false).length;
     }
 
     @Override
-    public InputStream asStream() throws IOException {
+    public InputStream asStream() throws BinaryException {
         return new ByteArrayInputStream(asByteArray(false));
     }
 

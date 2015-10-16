@@ -1,7 +1,8 @@
 package com.sproutigy.commons.binary.impl;
 
+import com.sproutigy.commons.binary.BinaryException;
+
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author LukeAheadNET
@@ -24,12 +25,12 @@ public class TempFileBinary extends FileBinary {
     }
 
     @Override
-    public String toTempFile() throws IOException {
+    public String toTempFile() throws BinaryException {
         return getFile().getAbsolutePath();
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws BinaryException {
         super.close();
         if (deleteOnClose) {
             if (!getFile().delete()) {

@@ -24,7 +24,7 @@ public class BinaryBuilder extends OutputStream {
         if (expectedSize > maxMemorySizeBytes) {
             try {
                 prepareTempFile();
-            } catch (IOException e) {
+            } catch (BinaryException e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -46,7 +46,7 @@ public class BinaryBuilder extends OutputStream {
         return length;
     }
 
-    public BinaryBuilder append(Binary data) throws IOException {
+    public BinaryBuilder append(Binary data) throws BinaryException {
         return append(data.asStream());
     }
 
@@ -81,7 +81,7 @@ public class BinaryBuilder extends OutputStream {
             this.length += length;
             return this;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BinaryException(e);
         }
     }
 
@@ -92,7 +92,7 @@ public class BinaryBuilder extends OutputStream {
             this.length += 1;
             return this;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BinaryException(e);
         }
     }
 
@@ -108,42 +108,54 @@ public class BinaryBuilder extends OutputStream {
         return this;
     }
 
-    public BinaryBuilder append(InputStream inputStream) throws IOException {
+    public BinaryBuilder append(InputStream inputStream) throws BinaryException {
         int b;
-        while( (b = inputStream.read()) != Binary.EOF) {
-            append((byte)b);
+        try {
+            while( (b = inputStream.read()) != Binary.EOF) {
+                append((byte)b);
+            }
+        } catch (IOException e) {
+            throw new BinaryException(e);
         }
         return this;
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(int b) throws BinaryException {
         append((byte)b);
     }
 
-    private void prepareAppend(int appendSize) throws IOException {
+    private void prepareAppend(int appendSize) throws BinaryException {
         if (data != null)
             throw new IllegalStateException("Data already built");
 
         if (filePath == null && length+appendSize > maxMemorySizeBytes) {
             byte[] current = ((ByteArrayOutputStream)out).toByteArray();
             prepareTempFile();
-            out.write(current);
+            try {
+                out.write(current);
+            } catch (IOException e) {
+                throw new BinaryException(e);
+            }
         }
         if (length+appendSize > maxSizeBytesLimit) {
-            throw new IOException("Limit exceeded");
+            throw new BinaryException("Limit exceeded");
         }
     }
 
-    private void prepareTempFile() throws IOException {
-        File file = File.createTempFile(UUID.randomUUID().toString(), ".binary.tmp");
-        file.deleteOnExit();
-        filePath = file.getPath();
-        if (out != null) out.close();
-        out = new FileOutputStream(file);
+    private void prepareTempFile() throws BinaryException {
+        try {
+            File file = File.createTempFile(UUID.randomUUID().toString(), ".binary.tmp");
+            file.deleteOnExit();
+            filePath = file.getPath();
+            if (out != null) out.close();
+            out = new FileOutputStream(file);
+        } catch(IOException e) {
+            throw new BinaryException(e);
+        }
     }
 
-    public Binary build() {
+    public Binary build() throws BinaryException {
         if (data == null) {
             if (filePath != null) {
                 data = new TempFileBinary(filePath, true, false);
@@ -158,7 +170,9 @@ public class BinaryBuilder extends OutputStream {
                 out.close();
                 out = null;
             }
-        } catch (IOException ignore) { }
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
 
         return data;
     }

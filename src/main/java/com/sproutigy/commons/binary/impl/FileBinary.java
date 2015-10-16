@@ -1,6 +1,7 @@
 package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
+import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.*;
 
@@ -41,25 +42,37 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     @Override
-    public Binary subrange(long offset, long length) throws IOException {
-        final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
+    public Binary subrange(long offset, long length) throws BinaryException {
         try {
-            randomAccessFile.seek(offset);
-            InputStream streamAdapter = new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return randomAccessFile.read();
-                }
-            };
-            return Binary.fromByteArray(readBytesFromStream(streamAdapter, length));
-        } finally {
-            randomAccessFile.close();
+            final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
+            try {
+                randomAccessFile.seek(offset);
+                InputStream streamAdapter = new InputStream() {
+                    @Override
+                    public int read() {
+                        try {
+                            return randomAccessFile.read();
+                        } catch (IOException e) {
+                            throw new BinaryException(e);
+                        }
+                    }
+                };
+                return Binary.fromByteArray(readBytesFromStream(streamAdapter, length));
+            } finally {
+                randomAccessFile.close();
+            }
+        } catch(IOException e) {
+            throw new BinaryException(e);
         }
     }
 
     @Override
-    public InputStream asStream() throws IOException {
-        return new FileInputStream(file);
+    public InputStream asStream() throws BinaryException {
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            throw new BinaryException(e);
+        }
     }
 
     @Override

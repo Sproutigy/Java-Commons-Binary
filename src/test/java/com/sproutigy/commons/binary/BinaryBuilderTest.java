@@ -5,7 +5,6 @@ import com.sproutigy.commons.binary.impl.TempFileBinary;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +14,7 @@ import static org.junit.Assert.*;
 public class BinaryBuilderTest {
 
     @Test
-    public void testBuildSmallData() throws IOException {
+    public void testBuildSmallData() throws BinaryException {
         BinaryBuilder builder = new BinaryBuilder().append("HELLO", "UTF-8").append((byte) 0);
         assertEquals(6, builder.length());
         Binary data = builder.build();
