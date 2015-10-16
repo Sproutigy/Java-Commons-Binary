@@ -1,7 +1,7 @@
 # Sproutigy Java Commons Binary
-JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.
-It allows adaptation or conversion from one type to another and maintain single data source layer instead of different low-level types.
-This library provides `Binary` abstract class along with multiple implementors (but you can provide your own), as also `BinaryBuilder` and `BinaryMap` interface with default implementation.
+JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files as also different string encoding types.
+It allows adaptation or conversion from one type to another. It's easier and less error-prone to maintain single data source object instead of multiple different low-level types.
+This library provides `Binary` abstract class along with multiple implementors (while still you can provide your own), as also `BinaryBuilder` and `BinaryMap` interfaces with default implementation.
 
 
 ## Requirements and dependencies
@@ -56,7 +56,7 @@ Binary.fromStringASCII("HELLO").toStream(outputStream);
 long len = Binary.fromStream(inputStream).length();
 ```
 
-#### Use subrange of data
+##### Use subrange of data
 ```java
 Binary.fromFile(file).subrange(0,5).asStringUTF8();
 ```
