@@ -3,6 +3,7 @@ Version 2.0.0:
 - Changed methods to throw unchecked BinaryException instead of checked IOException
 - Added Hex and Base64 support
 
+
 Version 1.1.0 (2015-10-01):
 - Java 6 support
 - Dropped methods that were using Java 7 Path class (use File or path String instead)

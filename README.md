@@ -5,9 +5,8 @@ This library provides `Binary` abstract class along with multiple implementors (
 
 
 ## Requirements and dependencies
-Requires Java 6 or later.
-This library has following dependency:
-- [SLF4J](http://www.slf4j.org/)
+Requires Java 6 or later. No additional dependencies.
+
 
 ## Elements
 
@@ -98,7 +97,7 @@ To use as a dependency add to your `pom.xml` into `<dependencies>` section:
 ```xml
 <dependency>
     <groupId>com.sproutigy.commons</groupId>
-    <artifactId>Binary</artifactId>
+    <artifactId>binary</artifactId>
     <version>RELEASE</version>
 </dependency>
 ```
