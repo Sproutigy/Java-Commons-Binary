@@ -1,7 +1,7 @@
 Version 2.0.0:
 - Renamed from RawData to Binary (along with package and class names changes)
 - Changed methods to throw unchecked BinaryException instead of checked IOException
-
+- Added Hex and Base64 support
 
 Version 1.1.0 (2015-10-01):
 - Java 6 support

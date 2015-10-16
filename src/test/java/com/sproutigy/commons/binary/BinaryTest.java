@@ -51,4 +51,18 @@ public class BinaryTest {
         String file = Binary.fromStringASCII("ABCDEFGHIJK").toTempFile();
         assertEquals("BC", Binary.fromFile(file).subrange(1,2).asStringASCII());
     }
+
+    @Test
+    public void testHex() {
+        Binary b = Binary.fromHex("48454c4c4f");
+        assertEquals("HELLO", b.asStringASCII());
+        assertEquals("48454C4C4F", b.toHex());
+    }
+
+    @Test
+    public void testBase64() {
+        Binary b = Binary.fromBase64("SEVMTE8=");
+        assertEquals("HELLO", b.asStringASCII());
+        assertEquals("SEVMTE8=", b.toBase64());
+    }
 }

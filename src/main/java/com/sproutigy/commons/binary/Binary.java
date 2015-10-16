@@ -4,6 +4,7 @@ import com.sproutigy.commons.binary.impl.ByteArrayBinary;
 import com.sproutigy.commons.binary.impl.ByteBufferBinary;
 import com.sproutigy.commons.binary.impl.FileBinary;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -225,6 +226,23 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
+    public String toHex() {
+        byte[] bytes = asByteArray();
+        char[] hex = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hex[j * 2] = HEX_ARRAY[v >>> 4];
+            hex[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hex);
+    }
+
+    public String toBase64() {
+        return DatatypeConverter.printBase64Binary(asByteArray());
+    }
+
     public Binary subrange(long offset) throws BinaryException {
         return subrange(offset, LENGTH_UNSPECIFIED);
     }
@@ -420,6 +438,16 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Binary fromHex(String hex) {
+        byte[] bytes = DatatypeConverter.parseHexBinary(hex);
+        return Binary.fromByteArray(bytes);
+    }
+
+    public static Binary fromBase64(String base64) {
+        byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
+        return Binary.fromByteArray(bytes);
     }
 
     public static Binary fromFile(String path) {

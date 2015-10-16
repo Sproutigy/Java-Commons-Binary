@@ -27,6 +27,8 @@ String UTF-16 | `Binary.fromStringUTF16(s)` | `String asStringUTF16()`
 String UTF-32 | `Binary.fromStringUTF32(s)` | `String asStringUTF32()`
 Stream | `Binary.fromStream(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
 File | `Binary.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
+Hex String | `Binary.fromHex(s)` | `String asHex()`
+Base64 String | `Binary.fromBase64(s)` | `String asBase64()`
 
 Plus some additional methods:
 - `subrange(offset, length)` returns subrange of current Binary
