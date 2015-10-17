@@ -239,8 +239,45 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return new String(hex);
     }
 
-    public String toBase64() {
-        return DatatypeConverter.printBase64Binary(asByteArray());
+    public String asBase64() {
+        return asBase64(BaseEncoding.Dialect.STANDARD, BaseEncoding.Padding.STANDARD);
+    }
+
+    public String asBase64(BaseEncoding.Dialect dialect) {
+        return asBase64(dialect, BaseEncoding.Padding.STANDARD);
+    }
+
+    public String asBase64(BaseEncoding.Padding padding) {
+        return asBase64(BaseEncoding.Dialect.STANDARD, padding);
+    }
+
+    public String asBase64(BaseEncoding.Dialect dialect, BaseEncoding.Padding padding) {
+        String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray());
+        if (dialect == BaseEncoding.Dialect.STANDARD && padding == BaseEncoding.Padding.STANDARD) {
+            return standardBase64;
+        }
+
+        StringBuilder safeBase64 = new StringBuilder(standardBase64.length());
+        for(int i=0; i<standardBase64.length(); i++) {
+            char c = standardBase64.charAt(i);
+
+            if (dialect == BaseEncoding.Dialect.SAFE) {
+                if (c == '+') c = '-';
+                else if (c == '/') c = '_';
+            }
+
+            if (c == '=') {
+                if (padding == BaseEncoding.Padding.STANDARD) {
+                    safeBase64.append('=');
+                }
+                else if (padding == BaseEncoding.Padding.SAFE) {
+                    safeBase64.append('.');
+                }
+            } else {
+                safeBase64.append(c);
+            }
+        }
+        return safeBase64.toString();
     }
 
     public Binary subrange(long offset) throws BinaryException {
@@ -445,8 +482,28 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return Binary.fromByteArray(bytes);
     }
 
+    /**
+     * Reads standard and URL/filename-safe Base 64 dialects as described in RFC 4686.
+     * Additionally it accepts not Base 64 encoded strings without padding or allows to use dot character ('.') as padding character.
+     * @param base64 Base 64 encoded string
+     * @return Binary instance containing provided data
+     */
     public static Binary fromBase64(String base64) {
-        byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
+        StringBuilder normalizedBase64 = new StringBuilder(base64.length()+3);
+        for(int i = 0; i<base64.length(); i++) {
+            char c = base64.charAt(i);
+            if (c == '-') c = '+'; //translate from URL-safe
+            if (c == '_') c = '/'; //translate from URL-safe
+            if (c == '.') c = '='; //translate from custom URL-safe padding
+            normalizedBase64.append(c);
+        }
+
+        //recreate padding
+        while (normalizedBase64.length()%4 != 0) {
+            normalizedBase64.append('=');
+        }
+
+        byte[] bytes = DatatypeConverter.parseBase64Binary(normalizedBase64.toString());
         return Binary.fromByteArray(bytes);
     }
 

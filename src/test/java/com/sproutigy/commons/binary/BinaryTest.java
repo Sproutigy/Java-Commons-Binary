@@ -61,8 +61,22 @@ public class BinaryTest {
 
     @Test
     public void testBase64() {
-        Binary b = Binary.fromBase64("SEVMTE8=");
+        Binary b = Binary.fromBase64("SEVMTE8");
         assertEquals("HELLO", b.asStringASCII());
-        assertEquals("SEVMTE8=", b.toBase64());
+        assertEquals("SEVMTE8=", b.asBase64(BaseEncoding.Padding.STANDARD));
+        assertEquals("SEVMTE8.", b.asBase64(BaseEncoding.Padding.SAFE));
+        assertEquals("SEVMTE8", b.asBase64(BaseEncoding.Padding.NO));
+
+        Binary b2 = Binary.fromBase64("zs/Q0dI=");
+        byte[] bytes = b2.asByteArray();
+        assertEquals((byte)206, bytes[0]);
+        assertEquals((byte)207, bytes[1]);
+        assertEquals((byte)208, bytes[2]);
+        assertEquals((byte)209, bytes[3]);
+        assertEquals((byte)210, bytes[4]);
+        assertEquals("zs_Q0dI", b2.asBase64(BaseEncoding.Dialect.SAFE, BaseEncoding.Padding.NO));
+
+        assertArrayEquals(bytes, Binary.fromBase64("zs_Q0dI").asByteArray());
     }
+
 }
