@@ -9,11 +9,32 @@ public class BaseEncoding {
     }
 
     public enum Dialect {
-        STANDARD, SAFE
+        /**
+         * Standard Base 64 Encoding
+         */
+        STANDARD,
+
+        /**
+         * URL-safe (and filename-safe) Base 64 Encoding
+         */
+        SAFE
     }
 
     public enum Padding {
-        NO, STANDARD, SAFE
+        /**
+         * No padding at all
+         */
+        NO,
+
+        /**
+         * Use equals sign character ('=') as padding
+         */
+        STANDARD,
+
+        /**
+         * Use dot sign character ('.') as padding
+         */
+        SAFE
     }
 
 }

@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Default implementation of BinaryMap.
+ *
  * @author LukeAheadNET
  */
 public class DefaultBinaryMap extends LinkedHashMap<Binary, Binary> implements BinaryMap {

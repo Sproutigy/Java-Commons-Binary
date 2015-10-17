@@ -11,6 +11,9 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 /**
+ * Binary represents raw data that may be represented by different data structures and easily converted from one to another.
+ * This abstract class may be safely extended to provide own Binary handlers.
+ *
  * @author LukeAheadNET
  */
 public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable {
@@ -139,6 +142,12 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return ((ByteBuffer)ByteBuffer.allocate(Character.SIZE / BITS_PER_BYTE).put(asByteArray(false)).flip()).getChar();
     }
 
+    /**
+     * Creates new temporary file with random name and returns full path to the file
+     *
+     * @return Temporary file path string
+     * @throws BinaryException wrapped IOException
+     */
     public String toTempFile() throws BinaryException {
         try {
             File file = File.createTempFile(UUID.randomUUID().toString(), ".binary.tmp");
@@ -155,8 +164,12 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public void toFile(File file) throws BinaryException {
+        toFile(file, false);
+    }
+
+    public void toFile(File file, boolean append) throws BinaryException {
         try {
-            OutputStream out = new FileOutputStream(file);
+            OutputStream out = new FileOutputStream(file, append);
             try {
                 toStream(out);
             } finally {
@@ -228,7 +241,11 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-    public String toHex() {
+    /**
+     * Hexadecimal representation containing digits (0-9) with upper-case letters (A-F)
+     * @return Hexadecimal encoded string
+     */
+    public String asHex() {
         byte[] bytes = asByteArray();
         char[] hex = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {
@@ -239,18 +256,34 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return new String(hex);
     }
 
+    /**
+     * Represent as Base 64 with standard dialect and standard padding
+     * @return Base 64 encoded string
+     */
     public String asBase64() {
         return asBase64(BaseEncoding.Dialect.STANDARD, BaseEncoding.Padding.STANDARD);
     }
 
+    /**
+     * Represent as Base 64 with customized dialect and standard padding
+     * @return Base 64 encoded string
+     */
     public String asBase64(BaseEncoding.Dialect dialect) {
         return asBase64(dialect, BaseEncoding.Padding.STANDARD);
     }
 
+    /**
+     * Represent as Base 64 with standard dialect and customized padding
+     * @return Base 64 encoded string
+     */
     public String asBase64(BaseEncoding.Padding padding) {
         return asBase64(BaseEncoding.Dialect.STANDARD, padding);
     }
 
+    /**
+     * Represent as Base 64 with customized dialect and padding
+     * @return Base 64 encoded string
+     */
     public String asBase64(BaseEncoding.Dialect dialect, BaseEncoding.Padding padding) {
         String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray());
         if (dialect == BaseEncoding.Dialect.STANDARD && padding == BaseEncoding.Padding.STANDARD) {

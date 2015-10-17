@@ -56,7 +56,7 @@ public class BinaryTest {
     public void testHex() {
         Binary b = Binary.fromHex("48454c4c4f");
         assertEquals("HELLO", b.asStringASCII());
-        assertEquals("48454C4C4F", b.toHex());
+        assertEquals("48454C4C4F", b.asHex());
     }
 
     @Test

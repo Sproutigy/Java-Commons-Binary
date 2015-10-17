@@ -8,6 +8,14 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 /**
+ * BinaryBuilder allows to append any type of low-level data to finally build Binary.
+ * Allows to append data progressively.
+ * When data is rather small it is kept in memory.
+ * To prevent OutOfMemoryException, when it reaches predefined limits,
+ * its content is written to temporary file and all
+ * further append requests are targeting there.
+ * BinaryBuilder implements OutputStream, so can be used as a target stream.
+ *
  * @author LukeAheadNET
  */
 public class BinaryBuilder extends OutputStream {
