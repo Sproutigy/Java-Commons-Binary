@@ -67,6 +67,22 @@ Binary.fromFile(file).subrange(0,5).asStringUTF8();
 byte[] emptyByteArray = Binary.EMPTY.asByteArray();
 ```
 
+#### NewLine (line separator / End-Of-Line) helper
+```java
+StringBuilder builder = new StringBuilder();
+builder.append("Line 1");
+builder.append(NewLine.WINDOWS);
+builder.append("Line 2");
+builder.append(NewLine.UNIX);
+builder.append("Line 3");
+builder.append(NewLine.MAC);
+builder.append("Line 4");
+builder.append(NewLine.LOCAL);
+
+String s = builder.toString();
+String t = NewLine.normalize(s, NewLine.UNIX);
+```
+
 
 ### BinaryBuilder
 `BinaryBuilder` allows to append any type of low-level data to finally build `Binary`.
