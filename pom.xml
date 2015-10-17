@@ -9,14 +9,14 @@
     </parent>
 
     <groupId>com.sproutigy.commons</groupId>
-    <artifactId>rawdata</artifactId>
-    <version>1.1.0</version>
+    <artifactId>binary</artifactId>
+    <version>2.0.0</version>
 
     <packaging>bundle</packaging>
 
-    <name>Sproutigy Java Commons RawData</name>
+    <name>Sproutigy Java Commons Binary</name>
     <description>JVM library that provides consistent abstraction level over data from byte arrays, byte buffers, streams and files.</description>
-    <url>https://github.com/Sproutigy/Java-Commons-RawData</url>
+    <url>https://github.com/Sproutigy/Java-Commons-Binary</url>
 
     <licenses>
         <license>
@@ -28,7 +28,7 @@
     </licenses>
 
     <issueManagement>
-        <url>https://github.com/Sproutigy/Java-Commons-RawData/issues</url>
+        <url>https://github.com/Sproutigy/Java-Commons-Binary/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
@@ -60,9 +60,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</connection>
-        <url>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</url>
-        <developerConnection>scm:git:git@github.com:Sproutigy/Java-Commons-RawData.git</developerConnection>
+        <connection>scm:git:git@github.com:Sproutigy/Java-Commons-Binary.git</connection>
+        <url>scm:git:git@github.com:Sproutigy/Java-Commons-Binary.git</url>
+        <developerConnection>scm:git:git@github.com:Sproutigy/Java-Commons-Binary.git</developerConnection>
     </scm>
 
 </project>
