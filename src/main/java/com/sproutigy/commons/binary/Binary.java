@@ -203,11 +203,26 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public void toByteArray(byte[] target) throws BinaryException {
-        toByteArray(target, 0);
+    /**
+     * Writes data to some existing byte array
+     *
+     * @param target byte array destination
+     * @return length of source (written) data
+     * @throws BinaryException wrapped IOException or validation exception
+     */
+    public int toByteArray(byte[] target) throws BinaryException {
+        return toByteArray(target, 0);
     }
 
-    public void toByteArray(byte[] target, int targetOffset) throws BinaryException {
+    /**
+     * Writes data to some existing byte array starting from specific offset
+     *
+     * @param target byte array destination
+     * @param targetOffset destination offset to start
+     * @return length of source (written) data
+     * @throws BinaryException wrapped IOException or validation exception
+     */
+    public int toByteArray(byte[] target, int targetOffset) throws BinaryException {
         long length = length();
         if ((long)targetOffset + length > Integer.MAX_VALUE) {
             throw new BinaryException("Unable to write - too big data");
@@ -218,6 +233,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
         if (length < 0) {
             try {
+                length = 0;
                 int curOffset = targetOffset;
                 InputStream in = asStream();
                 try {
@@ -225,6 +241,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
                     while ((readbyte = in.read()) != EOF) {
                         target[curOffset] = (byte) readbyte;
                         curOffset++;
+                        length++;
                     }
                 } finally {
                     in.close();
@@ -237,6 +254,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         {
             System.arraycopy(asByteArray(false), 0, target, targetOffset, (int)length);
         }
+        return (int)length;
     }
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
