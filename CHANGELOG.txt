@@ -1,4 +1,6 @@
 Version 2.1.0:
+- BinaryBuilder enhancements
+- fromStream() now uses BinaryBuilder internally to support huge streams
 - toByteArray() now returns length of source data
 
 

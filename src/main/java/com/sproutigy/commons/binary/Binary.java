@@ -303,7 +303,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
      * @return Base 64 encoded string
      */
     public String asBase64(BaseEncoding.Dialect dialect, BaseEncoding.Padding padding) {
-        String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray());
+        String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray(false));
         if (dialect == BaseEncoding.Dialect.STANDARD && padding == BaseEncoding.Padding.STANDARD) {
             return standardBase64;
         }
@@ -412,6 +412,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     }
 
+    protected static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[4096];
+        int readlen;
+        while ((readlen = in.read(buffer)) != EOF) {
+            out.write(buffer, 0, readlen);
+        }
+        out.flush();
+    }
+
     protected static byte[] readBytesFromStream(InputStream in) throws BinaryException {
         return readBytesFromStream(in, LENGTH_UNSPECIFIED);
     }
@@ -426,12 +435,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         try {
             if (length <= 0) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int readlen;
-                while ((readlen = in.read(buffer)) != EOF) {
-                    out.write(buffer, 0, readlen);
-                }
-                out.flush();
+                copyStream(in, out);
                 return out.toByteArray();
             } else {
                 int offset = 0;
@@ -453,11 +457,22 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public static Binary fromStream(InputStream in) throws BinaryException {
-        return fromByteArray(readBytesFromStream(in));
+        return fromStream(in, LENGTH_UNSPECIFIED);
     }
 
     public static Binary fromStream(InputStream in, long length) throws BinaryException {
-        return fromByteArray(readBytesFromStream(in, length));
+        if (length == 0)
+            return Binary.EMPTY;
+
+        long expectedLength = (length > 0) ? length : BinaryBuilder.DEFAULT_EXPECTED_SIZE;
+        BinaryBuilder builder = new BinaryBuilder(expectedLength);
+        try {
+            copyStream(in, builder);
+            builder.close();
+            return builder.build();
+        } catch(IOException e) {
+            throw new BinaryException(e);
+        }
     }
 
     public static Binary fromByte(byte value) {
