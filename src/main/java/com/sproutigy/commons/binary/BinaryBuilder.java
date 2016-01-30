@@ -20,37 +20,41 @@ import java.util.UUID;
  */
 public class BinaryBuilder extends OutputStream {
 
-    public static final int DEFAULT_EXPECTED_SIZE = 1024;
-    public static final int DEFAULT_MAX_MEMORY_SIZE_BYTES = 50*1024;
-    public static final int DEFAULT_MAX_SIZE_BYTES_LIMIT = Integer.MAX_VALUE;
+    public static final long DEFAULT_EXPECTED_SIZE = 1024;
+    public static final int DEFAULT_MAX_MEMORY_SIZE_BYTES = 100*1024;
+    public static final long DEFAULT_MAX_SIZE_BYTES_LIMIT = Integer.MAX_VALUE;
 
-    public BinaryBuilder() {
+    public BinaryBuilder() throws BinaryException {
         this(DEFAULT_EXPECTED_SIZE, DEFAULT_MAX_MEMORY_SIZE_BYTES, DEFAULT_MAX_SIZE_BYTES_LIMIT);
     }
 
-    public BinaryBuilder(int expectedSize, int maxMemorySizeBytes, int maxSizeBytesLimit) {
-        if (expectedSize > maxMemorySizeBytes) {
-            try {
-                prepareTempFile();
-            } catch (BinaryException e) {
-                throw new RuntimeException(e);
-            }
+    public BinaryBuilder(long expectedSize) throws BinaryException {
+        this(expectedSize, DEFAULT_MAX_MEMORY_SIZE_BYTES, DEFAULT_MAX_SIZE_BYTES_LIMIT);
+    }
+
+    public BinaryBuilder(long expectedSize, int maxMemorySizeBytes) throws BinaryException {
+        this(expectedSize, maxMemorySizeBytes, Long.MAX_VALUE);
+    }
+
+    public BinaryBuilder(long expectedSize, int maxMemorySizeBytes, long maxSizeBytesLimit) throws BinaryException {
+        if (expectedSize > maxMemorySizeBytes || expectedSize > Integer.MAX_VALUE) {
+            prepareTempFile();
         } else {
-            out = new ByteArrayOutputStream(expectedSize);
+            out = new ByteArrayOutputStream((int)expectedSize);
         }
 
         this.maxMemorySizeBytes = maxMemorySizeBytes;
         this.maxSizeBytesLimit = maxSizeBytesLimit;
     }
 
-    private int length = 0;
+    private long length = 0;
     private int maxMemorySizeBytes;
-    private int maxSizeBytesLimit;
+    private long maxSizeBytesLimit;
     private String filePath;
     private OutputStream out;
     private Binary data = null;
 
-    public int length() {
+    public long length() {
         return length;
     }
 
@@ -58,31 +62,31 @@ public class BinaryBuilder extends OutputStream {
         return append(data.asStream());
     }
 
-    public BinaryBuilder append(String string, String charsetName) {
+    public BinaryBuilder append(String string, String charsetName) throws BinaryException {
         return append(string.getBytes(Charset.forName(charsetName)));
     }
 
-    public BinaryBuilder appendASCII(String string) {
+    public BinaryBuilder appendASCII(String string) throws BinaryException {
         return append(string, "ASCII");
     }
 
-    public BinaryBuilder appendUTF8(String string) {
+    public BinaryBuilder appendUTF8(String string) throws BinaryException {
         return append(string, "UTF-8");
     }
 
-    public BinaryBuilder appendUTF16(String string) {
+    public BinaryBuilder appendUTF16(String string) throws BinaryException {
         return append(string, "UTF-16");
     }
 
-    public BinaryBuilder appendUTF32(String string) {
+    public BinaryBuilder appendUTF32(String string) throws BinaryException {
         return append(string, "UTF-32");
     }
 
-    public BinaryBuilder append(byte[] bytes) {
+    public BinaryBuilder append(byte[] bytes) throws BinaryException {
         return append(bytes, 0, bytes.length);
     }
 
-    public BinaryBuilder append(byte[] bytes, int offset, int length) {
+    public BinaryBuilder append(byte[] bytes, int offset, int length) throws BinaryException {
         try {
             prepareAppend(length);
             out.write(bytes, offset, length);
@@ -93,7 +97,7 @@ public class BinaryBuilder extends OutputStream {
         }
     }
 
-    public BinaryBuilder append(byte b) {
+    public BinaryBuilder append(byte b) throws BinaryException {
         try {
             prepareAppend(1);
             out.write(b);
@@ -104,7 +108,7 @@ public class BinaryBuilder extends OutputStream {
         }
     }
 
-    public BinaryBuilder append(ByteBuffer byteBuffer) {
+    public BinaryBuilder append(ByteBuffer byteBuffer) throws BinaryException {
         if (byteBuffer.hasArray()) {
             append(byteBuffer.array(), byteBuffer.arrayOffset(), byteBuffer.limit());
         } else {
@@ -117,15 +121,34 @@ public class BinaryBuilder extends OutputStream {
     }
 
     public BinaryBuilder append(InputStream inputStream) throws BinaryException {
-        int b;
         try {
-            while( (b = inputStream.read()) != Binary.EOF) {
-                append((byte)b);
+            byte[] buffer = new byte[4*1024];
+            int readlen;
+            while ((readlen = inputStream.read(buffer)) != Binary.EOF) {
+                out.write(buffer, 0, readlen);
             }
         } catch (IOException e) {
             throw new BinaryException(e);
         }
         return this;
+    }
+
+    public boolean append(InputStream inputStream, long maxLength) throws BinaryException {
+        long remaining = maxLength;
+        int b;
+        try {
+            while( true ) {
+                if (remaining <= 0)
+                    return false;
+                b = inputStream.read();
+                if (b == Binary.EOF)
+                    return true;
+                append((byte)b);
+                remaining--;
+            }
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
     }
 
     @Override
@@ -183,5 +206,10 @@ public class BinaryBuilder extends OutputStream {
         }
 
         return data;
+    }
+
+    @Override
+    public void close() throws IOException {
+        build();
     }
 }
