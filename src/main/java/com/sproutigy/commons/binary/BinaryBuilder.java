@@ -66,20 +66,20 @@ public class BinaryBuilder extends OutputStream {
         return append(string.getBytes(Charset.forName(charsetName)));
     }
 
+    public BinaryBuilder append(String string, Charset charset) {
+        return append(string.getBytes(charset));
+    }
+
     public BinaryBuilder appendASCII(String string) throws BinaryException {
-        return append(string, "ASCII");
+        return append(string, Charsets.US_ASCII);
+    }
+
+    public BinaryBuilder appendISO(String string) {
+        return append(string, Charsets.ISO_8859_1);
     }
 
     public BinaryBuilder appendUTF8(String string) throws BinaryException {
-        return append(string, "UTF-8");
-    }
-
-    public BinaryBuilder appendUTF16(String string) throws BinaryException {
-        return append(string, "UTF-16");
-    }
-
-    public BinaryBuilder appendUTF32(String string) throws BinaryException {
-        return append(string, "UTF-32");
+        return append(string, Charsets.UTF_8);
     }
 
     public BinaryBuilder append(byte[] bytes) throws BinaryException {
@@ -125,7 +125,7 @@ public class BinaryBuilder extends OutputStream {
             byte[] buffer = new byte[4*1024];
             int readlen;
             while ((readlen = inputStream.read(buffer)) != Binary.EOF) {
-                out.write(buffer, 0, readlen);
+                append(buffer, 0, readlen);
             }
         } catch (IOException e) {
             throw new BinaryException(e);
@@ -153,6 +153,10 @@ public class BinaryBuilder extends OutputStream {
 
     @Override
     public void write(int b) throws BinaryException {
+        if (b < 0 || b > 255) {
+            throw new IllegalArgumentException("not a byte");
+        }
+
         append((byte)b);
     }
 
@@ -210,6 +214,26 @@ public class BinaryBuilder extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        build();
+        if (data != null) {
+            data.close();
+        }
+
+        if (out != null) {
+            out.close();
+            out = null;
+        }
+
+        length = -1;
+        data = null;
+        filePath = null;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            close();
+        } catch(Throwable ignore) { }
+
+        super.finalize();
     }
 }

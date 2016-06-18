@@ -87,19 +87,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public String asStringASCII() throws BinaryException {
-        return asString("US-ASCII");
+        return asString(Charsets.US_ASCII);
+    }
+
+    public String asStringISO() throws BinaryException {
+        return asString(Charsets.ISO_8859_1);
     }
 
     public String asStringUTF8() throws BinaryException {
-        return asString("UTF-8");
-    }
-
-    public String asStringUTF16() throws BinaryException {
-        return asString("UTF-16");
-    }
-
-    public String asStringUTF32() throws BinaryException {
-        return asString("UTF-32");
+        return asString(Charsets.UTF_8);
     }
 
     public String asString(String charsetName) throws BinaryException {
@@ -516,19 +512,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public static Binary fromStringASCII(String s) {
-        return fromString(s, "US-ASCII");
+        return fromString(s, Charsets.US_ASCII);
+    }
+
+    public static Binary fromStringISO(String s) {
+        return fromString(s, Charsets.ISO_8859_1);
     }
 
     public static Binary fromStringUTF8(String s) {
-        return fromString(s, "UTF-8");
-    }
-
-    public static Binary fromStringUTF16(String s) {
-        return fromString(s, "UTF-16");
-    }
-
-    public static Binary fromStringUTF32(String s) {
-        return fromString(s, "UTF-32");
+        return fromString(s, Charsets.UTF_8);
     }
 
     public static Binary fromString(String s, Charset charset) {

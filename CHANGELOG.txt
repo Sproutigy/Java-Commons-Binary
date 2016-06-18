@@ -1,3 +1,12 @@
+Version 2.2.0:
+- BinaryBuilderFactory class
+- Charsets utility class
+- use of Charset class in API as a priority instead of charset names
+- close() and finalize() of BinaryBuilder now cleanups data
+- removed methods for operating on UTF-16 and UTF-32 to prevent big/little endian problems (need to use methods accepting charset)
+- BinaryBuilder length() and temp file bugfix when appending InputStream
+
+
 Version 2.1.0 (2016-01-30):
 - BinaryBuilder enhancements
 - fromStream() now uses BinaryBuilder internally to support huge streams
