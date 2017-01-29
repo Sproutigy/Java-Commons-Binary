@@ -1,4 +1,5 @@
-Version 2.2.0:
+Version 2.2.0 (2017-01-30):
+- most Binary.fromXXX(x) changed to Binary.from(x) except Strings
 - BinaryBuilderFactory class
 - Charsets utility class
 - use of Charset class in API as a priority instead of charset names
