@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.sproutigy</groupId>
         <artifactId>opensource-parent</artifactId>
-        <version>1.1</version>
+        <version>2</version>
     </parent>
 
     <groupId>com.sproutigy.commons</groupId>
     <artifactId>binary</artifactId>
-    <version>2.0.0</version>
+    <version>2.2.0</version>
 
     <packaging>bundle</packaging>
 

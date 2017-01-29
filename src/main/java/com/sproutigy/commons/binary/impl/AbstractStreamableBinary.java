@@ -47,7 +47,7 @@ public abstract class AbstractStreamableBinary extends Binary {
                     throw new IndexOutOfBoundsException("Out of data range");
                 }
 
-                return Binary.fromByteArray(readBytesFromStream(stream, length));
+                return Binary.from(readBytesFromStream(stream, length));
             } finally {
                 stream.close();
             }

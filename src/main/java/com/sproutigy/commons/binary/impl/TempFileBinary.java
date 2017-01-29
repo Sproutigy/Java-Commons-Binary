@@ -31,12 +31,25 @@ public class TempFileBinary extends FileBinary {
 
     @Override
     public void close() throws BinaryException {
-        super.close();
         if (deleteOnClose) {
-            if (!getFile().delete()) {
-                getFile().deleteOnExit();
-            }
+            try {
+                File f = getFile();
+                if (f != null && f.exists()) {
+                    if (!f.delete()) {
+                        f.deleteOnExit();
+                    }
+                }
+            } catch(Throwable ignore) { }
         }
+        super.close();
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            close();
+        } catch(Throwable ignore) { }
+
+        super.finalize();
+    }
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -25,10 +26,10 @@ public class BinaryTest {
     @Test
     public void testStrings() throws UnsupportedEncodingException {
 
-        Binary dataFromString = Binary.fromByteArray("HELLO".getBytes("UTF-8"));
+        Binary dataFromString = Binary.from("HELLO".getBytes("UTF-8"));
         assertEquals(5, dataFromString.length());
         assertArrayEquals("HELLO".getBytes("UTF-8"), dataFromString.asByteArray());
-        assertEquals("HELLO", Binary.fromStringASCII("HELLO").asStringASCII());
+        assertEquals("HELLO", Binary.fromString("HELLO", StandardCharsets.US_ASCII).asStringASCII());
     }
 
     @Test
@@ -38,17 +39,17 @@ public class BinaryTest {
         FileOutputStream output = new FileOutputStream(file);
         try {
             output.write("Hello".getBytes("UTF-8"));
-            Binary.fromStringASCII(" World").toStream(output);
+            Binary.fromString(" World", StandardCharsets.US_ASCII).toStream(output);
         } finally {
             output.close();
         }
-        assertEquals("Hello World", Binary.fromFile(file).asStringUTF8());
+        assertEquals("Hello World", Binary.from(file).asStringUTF8());
     }
 
     @Test
     public void testSubrange() {
-        assertEquals("ello", Binary.fromStringASCII("Hello World").subrange(1, 4).asStringASCII());
-        String file = Binary.fromStringASCII("ABCDEFGHIJK").toTempFile();
+        assertEquals("ello", Binary.fromString("Hello World", StandardCharsets.US_ASCII).subrange(1, 4).asStringASCII());
+        String file = Binary.fromString("ABCDEFGHIJK", StandardCharsets.US_ASCII).toTempFile();
         assertEquals("BC", Binary.fromFile(file).subrange(1,2).asStringASCII());
     }
 

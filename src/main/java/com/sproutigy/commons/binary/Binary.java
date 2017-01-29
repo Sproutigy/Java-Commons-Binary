@@ -8,6 +8,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.UUID;
 
 /**
@@ -87,19 +88,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public String asStringASCII() throws BinaryException {
-        return asString("US-ASCII");
+        return asString(Charsets.US_ASCII);
+    }
+
+    public String asStringISO() throws BinaryException {
+        return asString(Charsets.ISO_8859_1);
     }
 
     public String asStringUTF8() throws BinaryException {
-        return asString("UTF-8");
-    }
-
-    public String asStringUTF16() throws BinaryException {
-        return asString("UTF-16");
-    }
-
-    public String asStringUTF32() throws BinaryException {
-        return asString("UTF-32");
+        return asString(Charsets.UTF_8);
     }
 
     public String asString(String charsetName) throws BinaryException {
@@ -203,11 +200,26 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public void toByteArray(byte[] target) throws BinaryException {
-        toByteArray(target, 0);
+    /**
+     * Writes data to some existing byte array
+     *
+     * @param target byte array destination
+     * @return length of source (written) data
+     * @throws BinaryException wrapped IOException or validation exception
+     */
+    public int toByteArray(byte[] target) throws BinaryException {
+        return toByteArray(target, 0);
     }
 
-    public void toByteArray(byte[] target, int targetOffset) throws BinaryException {
+    /**
+     * Writes data to some existing byte array starting from specific offset
+     *
+     * @param target byte array destination
+     * @param targetOffset destination offset to start
+     * @return length of source (written) data
+     * @throws BinaryException wrapped IOException or validation exception
+     */
+    public int toByteArray(byte[] target, int targetOffset) throws BinaryException {
         long length = length();
         if ((long)targetOffset + length > Integer.MAX_VALUE) {
             throw new BinaryException("Unable to write - too big data");
@@ -218,6 +230,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
         if (length < 0) {
             try {
+                length = 0;
                 int curOffset = targetOffset;
                 InputStream in = asStream();
                 try {
@@ -225,6 +238,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
                     while ((readbyte = in.read()) != EOF) {
                         target[curOffset] = (byte) readbyte;
                         curOffset++;
+                        length++;
                     }
                 } finally {
                     in.close();
@@ -237,6 +251,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         {
             System.arraycopy(asByteArray(false), 0, target, targetOffset, (int)length);
         }
+        return (int)length;
     }
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -285,7 +300,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
      * @return Base 64 encoded string
      */
     public String asBase64(BaseEncoding.Dialect dialect, BaseEncoding.Padding padding) {
-        String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray());
+        String standardBase64 = DatatypeConverter.printBase64Binary(asByteArray(false));
         if (dialect == BaseEncoding.Dialect.STANDARD && padding == BaseEncoding.Padding.STANDARD) {
             return standardBase64;
         }
@@ -394,6 +409,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     }
 
+    protected static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[4096];
+        int readlen;
+        while ((readlen = in.read(buffer)) != EOF) {
+            out.write(buffer, 0, readlen);
+        }
+        out.flush();
+    }
+
     protected static byte[] readBytesFromStream(InputStream in) throws BinaryException {
         return readBytesFromStream(in, LENGTH_UNSPECIFIED);
     }
@@ -408,12 +432,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         try {
             if (length <= 0) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int readlen;
-                while ((readlen = in.read(buffer)) != EOF) {
-                    out.write(buffer, 0, readlen);
-                }
-                out.flush();
+                copyStream(in, out);
                 return out.toByteArray();
             } else {
                 int offset = 0;
@@ -434,68 +453,43 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public static Binary fromStream(InputStream in) throws BinaryException {
-        return fromByteArray(readBytesFromStream(in));
+    public static Binary from(InputStream in) throws BinaryException {
+        return from(in, LENGTH_UNSPECIFIED);
     }
 
-    public static Binary fromStream(InputStream in, long length) throws BinaryException {
-        return fromByteArray(readBytesFromStream(in, length));
+    public static Binary from(InputStream in, long length) throws BinaryException {
+        if (length == 0)
+            return Binary.EMPTY;
+
+        long expectedLength = (length > 0) ? length : BinaryBuilder.DEFAULT_EXPECTED_SIZE;
+        BinaryBuilder builder = new BinaryBuilder(expectedLength);
+        try {
+            copyStream(in, builder);
+            return builder.build();
+        } catch(IOException e) {
+            throw new BinaryException(e);
+        }
     }
 
-    public static Binary fromByte(byte value) {
-        return fromByteArray(new byte[]{value});
-    }
-
-    public static Binary fromShort(short value) {
-        return fromByteBuffer(ByteBuffer.allocate(Short.SIZE / BITS_PER_BYTE).putShort(value));
-    }
-
-    public static Binary fromInteger(int value) {
-        return fromByteBuffer(ByteBuffer.allocate(Integer.SIZE / BITS_PER_BYTE).putInt(value));
-    }
-
-    public static Binary fromLong(long value) {
-        return fromByteBuffer(ByteBuffer.allocate(Long.SIZE / BITS_PER_BYTE).putLong(value));
-    }
-
-    public static Binary fromFloat(float value) {
-        return fromByteBuffer(ByteBuffer.allocate(Float.SIZE / BITS_PER_BYTE).putFloat(value));
-    }
-
-    public static Binary fromDouble(double value) {
-        return fromByteBuffer(ByteBuffer.allocate(Double.SIZE / BITS_PER_BYTE).putDouble(value));
-    }
-
-    public static Binary fromCharacter(char value) {
-        return fromByteBuffer(ByteBuffer.allocate(Character.SIZE / BITS_PER_BYTE).putChar(value));
-    }
-
-    public static Binary fromByteArray(byte[] bytes) {
+    public static Binary from(byte[] bytes) {
         return new ByteArrayBinary(bytes);
     }
 
-    public static Binary fromByteArray(byte[] bytes, int offset, int length) {
+    public static Binary from(byte[] bytes, int offset, int length) {
         return new ByteArrayBinary(bytes, offset, length);
     }
 
-    public static Binary fromByteBuffer(ByteBuffer byteBuffer) {
+    public static Binary from(ByteBuffer byteBuffer) {
         return new ByteBufferBinary(byteBuffer);
     }
 
-    public static Binary fromStringASCII(String s) {
-        return fromString(s, "US-ASCII");
-    }
-
-    public static Binary fromStringUTF8(String s) {
-        return fromString(s, "UTF-8");
-    }
-
-    public static Binary fromStringUTF16(String s) {
-        return fromString(s, "UTF-16");
-    }
-
-    public static Binary fromStringUTF32(String s) {
-        return fromString(s, "UTF-32");
+    /**
+     * Creates UTF-8 string Binary
+     * @param s
+     * @return
+     */
+    public static Binary fromString(String s) {
+        return fromString(s, Charsets.UTF_8);
     }
 
     public static Binary fromString(String s, Charset charset) {
@@ -512,7 +506,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     public static Binary fromHex(String hex) {
         byte[] bytes = DatatypeConverter.parseHexBinary(hex);
-        return Binary.fromByteArray(bytes);
+        return Binary.from(bytes);
     }
 
     /**
@@ -537,15 +531,19 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
 
         byte[] bytes = DatatypeConverter.parseBase64Binary(normalizedBase64.toString());
-        return Binary.fromByteArray(bytes);
+        return Binary.from(bytes);
     }
 
     public static Binary fromFile(String path) {
         return new FileBinary(path);
     }
 
-    public static Binary fromFile(File file) {
+    public static Binary from(File file) {
         return new FileBinary(file);
+    }
+
+    public static Binary from(Path path) {
+        return new FileBinary(path.toFile());
     }
 
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
