@@ -57,7 +57,7 @@ public class FileBinary extends AbstractStreamableBinary {
                         }
                     }
                 };
-                return Binary.fromByteArray(readBytesFromStream(streamAdapter, length));
+                return Binary.from(readBytesFromStream(streamAdapter, length));
             } finally {
                 randomAccessFile.close();
             }

@@ -153,10 +153,6 @@ public class BinaryBuilder extends OutputStream {
 
     @Override
     public void write(int b) throws BinaryException {
-        if (b < 0 || b > 255) {
-            throw new IllegalArgumentException("not a byte");
-        }
-
         append((byte)b);
     }
 
@@ -196,7 +192,7 @@ public class BinaryBuilder extends OutputStream {
                 data = new TempFileBinary(filePath, true, false);
             } else {
                 byte[] bytes = ((ByteArrayOutputStream) out).toByteArray();
-                data = Binary.fromByteArray(bytes);
+                data = Binary.from(bytes);
             }
         }
 

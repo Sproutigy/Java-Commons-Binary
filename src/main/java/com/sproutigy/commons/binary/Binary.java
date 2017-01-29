@@ -8,6 +8,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.UUID;
 
 /**
@@ -452,11 +453,11 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public static Binary fromStream(InputStream in) throws BinaryException {
-        return fromStream(in, LENGTH_UNSPECIFIED);
+    public static Binary from(InputStream in) throws BinaryException {
+        return from(in, LENGTH_UNSPECIFIED);
     }
 
-    public static Binary fromStream(InputStream in, long length) throws BinaryException {
+    public static Binary from(InputStream in, long length) throws BinaryException {
         if (length == 0)
             return Binary.EMPTY;
 
@@ -464,62 +465,30 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         BinaryBuilder builder = new BinaryBuilder(expectedLength);
         try {
             copyStream(in, builder);
-            builder.close();
             return builder.build();
         } catch(IOException e) {
             throw new BinaryException(e);
         }
     }
 
-    public static Binary fromByte(byte value) {
-        return fromByteArray(new byte[]{value});
-    }
-
-    public static Binary fromShort(short value) {
-        return fromByteBuffer(ByteBuffer.allocate(Short.SIZE / BITS_PER_BYTE).putShort(value));
-    }
-
-    public static Binary fromInteger(int value) {
-        return fromByteBuffer(ByteBuffer.allocate(Integer.SIZE / BITS_PER_BYTE).putInt(value));
-    }
-
-    public static Binary fromLong(long value) {
-        return fromByteBuffer(ByteBuffer.allocate(Long.SIZE / BITS_PER_BYTE).putLong(value));
-    }
-
-    public static Binary fromFloat(float value) {
-        return fromByteBuffer(ByteBuffer.allocate(Float.SIZE / BITS_PER_BYTE).putFloat(value));
-    }
-
-    public static Binary fromDouble(double value) {
-        return fromByteBuffer(ByteBuffer.allocate(Double.SIZE / BITS_PER_BYTE).putDouble(value));
-    }
-
-    public static Binary fromCharacter(char value) {
-        return fromByteBuffer(ByteBuffer.allocate(Character.SIZE / BITS_PER_BYTE).putChar(value));
-    }
-
-    public static Binary fromByteArray(byte[] bytes) {
+    public static Binary from(byte[] bytes) {
         return new ByteArrayBinary(bytes);
     }
 
-    public static Binary fromByteArray(byte[] bytes, int offset, int length) {
+    public static Binary from(byte[] bytes, int offset, int length) {
         return new ByteArrayBinary(bytes, offset, length);
     }
 
-    public static Binary fromByteBuffer(ByteBuffer byteBuffer) {
+    public static Binary from(ByteBuffer byteBuffer) {
         return new ByteBufferBinary(byteBuffer);
     }
 
-    public static Binary fromStringASCII(String s) {
-        return fromString(s, Charsets.US_ASCII);
-    }
-
-    public static Binary fromStringISO(String s) {
-        return fromString(s, Charsets.ISO_8859_1);
-    }
-
-    public static Binary fromStringUTF8(String s) {
+    /**
+     * Creates UTF-8 string Binary
+     * @param s
+     * @return
+     */
+    public static Binary fromString(String s) {
         return fromString(s, Charsets.UTF_8);
     }
 
@@ -537,7 +506,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     public static Binary fromHex(String hex) {
         byte[] bytes = DatatypeConverter.parseHexBinary(hex);
-        return Binary.fromByteArray(bytes);
+        return Binary.from(bytes);
     }
 
     /**
@@ -562,15 +531,19 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
 
         byte[] bytes = DatatypeConverter.parseBase64Binary(normalizedBase64.toString());
-        return Binary.fromByteArray(bytes);
+        return Binary.from(bytes);
     }
 
     public static Binary fromFile(String path) {
         return new FileBinary(path);
     }
 
-    public static Binary fromFile(File file) {
+    public static Binary from(File file) {
         return new FileBinary(file);
+    }
+
+    public static Binary from(Path path) {
+        return new FileBinary(path.toFile());
     }
 
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
