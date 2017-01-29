@@ -17,15 +17,15 @@ Requires Java 6 or later. No additional dependencies.
 
 Low-level type | Input - wrapping static method | Output - wrapper converter method 
 --- | --- | ---
-Byte Array | `Binary.fromByteArray(bytes)` | `byte[] asByteArray()`
-Byte Buffer | `Binary.fromByteBuffer(byteBuffer)` | `ByteBuffer asByteBuffer()`
+Byte Array | `Binary.from(bytes)` | `byte[] asByteArray()`
+Byte Buffer | `Binary.from(byteBuffer)` | `ByteBuffer asByteBuffer()`
 String | `Binary.fromString(s, charset)` | `String asString(charset)`
-String ASCII | `Binary.fromStringASCII(s)` | `String asStringASCII()`
-String UTF-8 | `Binary.fromStringUTF8(s)` | `String asStringUTF8()`
-String UTF-16 | `Binary.fromStringUTF16(s)` | `String asStringUTF16()`
-String UTF-32 | `Binary.fromStringUTF32(s)` | `String asStringUTF32()`
-Stream | `Binary.fromStream(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
-File | `Binary.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
+String ASCII | `Binary.fromString(s, "ASCII")` | `String asStringASCII()`
+String UTF-8 | `Binary.fromString(s)` | `String asStringUTF8()`
+String UTF-16 | `Binary.fromString(s, "UTF-16")` | `String asStringUTF16()`
+String UTF-32 | `Binary.fromString(s, "UTF-32")` | `String asStringUTF32()`
+Stream | `Binary.from(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
+File | `Binary.from(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
 Hex String | `Binary.fromHex(s)` | `String asHex()`
 Base64 String | `Binary.fromBase64(s)` | `String asBase64()` or `String asBase64(dialect,padding)`
 
@@ -43,22 +43,22 @@ String content = Binary.fromFile(file).asStringUTF8();
 
 ##### Make input stream from a string
 ```java
-InputStream stream = Binary.fromStringASCII("HELLO").asStream();
+InputStream stream = Binary.fromString("HELLO").asStream();
 ```
 
 ##### Write string to an output stream
 ```java
-Binary.fromStringASCII("HELLO").toStream(outputStream);
+Binary.fromString("HELLO").toStream(outputStream);
 ```
 
 ##### Count length of a stream
 ```java
-long len = Binary.fromStream(inputStream).length();
+long len = Binary.from(inputStream).length();
 ```
 
 ##### Use subrange of data
 ```java
-Binary.fromFile(file).subrange(0,5).asStringUTF8();
+Binary.from(file).subrange(0,5).asStringUTF8();
 ```
 
 
@@ -91,7 +91,7 @@ When data is rather small it is kept in memory. To prevent OutOfMemoryException,
 
 #### Example
 ```java
-Binary myData = new BinaryBuilder().fromStringASCII("HELL").append( (byte)79 ).build();
+Binary myData = new BinaryBuilder().appendISO("HELL").append( (byte)79 ).build();
 ```
 
 ### BinaryMap
@@ -102,8 +102,8 @@ Binary myData = new BinaryBuilder().fromStringASCII("HELL").append( (byte)79 ).b
 #### Example
 ```java
 BinaryMap map = new DefaultBinaryMap();
-map.put(Binary.fromStringASCII("Hello"), Binary.fromByte((byte)65));
-map.put(Binary.fromByte((byte) 90), Binary.fromStringUTF8("World"));
+map.put(Binary.fromString("Hello"), Binary.from((byte)65));
+map.put(Binary.from(new byte[] { 65, 90 }), Binary.fromString("World"));
 ```
 
 
