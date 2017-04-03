@@ -111,8 +111,4 @@ public class ByteArrayBinary extends Binary {
         length = 0;
     }
 
-    @Override
-    public String toString() {
-        return "bytes["+length+"]";
-    }
 }

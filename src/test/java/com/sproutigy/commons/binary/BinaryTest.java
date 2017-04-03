@@ -6,11 +6,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author LukeAheadNET
@@ -25,21 +23,20 @@ public class BinaryTest {
 
     @Test
     public void testStrings() throws UnsupportedEncodingException {
-
         Binary dataFromString = Binary.from("HELLO".getBytes("UTF-8"));
         assertEquals(5, dataFromString.length());
         assertArrayEquals("HELLO".getBytes("UTF-8"), dataFromString.asByteArray());
-        assertEquals("HELLO", Binary.fromString("HELLO", StandardCharsets.US_ASCII).asStringASCII());
+        assertEquals("HELLO", Binary.fromString("HELLO", Charset.forName("US-ASCII")).asStringASCII());
     }
 
     @Test
     public void testFileAsString() throws IOException {
-        File file = Files.createTempFile("", ".tmp").toFile().getAbsoluteFile();
+        File file = File.createTempFile("binary-test", ".tmp").getAbsoluteFile();
         file.deleteOnExit();
         FileOutputStream output = new FileOutputStream(file);
         try {
             output.write("Hello".getBytes("UTF-8"));
-            Binary.fromString(" World", StandardCharsets.US_ASCII).toStream(output);
+            Binary.fromString(" World", Charset.forName("US-ASCII")).toStream(output);
         } finally {
             output.close();
         }
@@ -48,8 +45,8 @@ public class BinaryTest {
 
     @Test
     public void testSubrange() {
-        assertEquals("ello", Binary.fromString("Hello World", StandardCharsets.US_ASCII).subrange(1, 4).asStringASCII());
-        String file = Binary.fromString("ABCDEFGHIJK", StandardCharsets.US_ASCII).toTempFile();
+        assertEquals("ello", Binary.fromString("Hello World", Charset.forName("US-ASCII")).subrange(1, 4).asStringASCII());
+        String file = Binary.fromString("ABCDEFGHIJK", Charset.forName("US-ASCII")).toTempFile();
         assertEquals("BC", Binary.fromFile(file).subrange(1,2).asStringASCII());
     }
 
@@ -78,6 +75,24 @@ public class BinaryTest {
         assertEquals("zs_Q0dI", b2.asBase64(BaseEncoding.Dialect.SAFE, BaseEncoding.Padding.NO));
 
         assertArrayEquals(bytes, Binary.fromBase64("zs_Q0dI").asByteArray());
+    }
+
+    @Test
+    public void testStringCharset() {
+        String s = "tęśt";
+
+        Binary b1 = Binary.fromString(s, Charsets.UTF_32);
+        assertTrue(b1.hasCharset());
+        assertEquals(Charsets.UTF_32, b1.getCharset());
+        String t1 = b1.asString();
+        assertEquals(s, t1);
+
+        Binary b2 = Binary.fromString(s, Charsets.ISO_8859_1);
+        assertTrue(b2.hasCharset());
+        assertEquals(Charsets.ISO_8859_1, b2.getCharset());
+        String t2 = b2.asString();
+        assertNotEquals(s, t2);
+        assertEquals("t??t", t2);
     }
 
 }

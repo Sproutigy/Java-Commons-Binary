@@ -28,4 +28,16 @@ public abstract class AbstractBytesBinary extends Binary {
         return new ByteArrayInputStream(asByteArray(false));
     }
 
+    @Override
+    public String toString() {
+        if (hasCharset()) {
+            return asString(getCharset());
+        } else {
+            if (!hasLength()) {
+                return "(bytes)";
+            } else {
+                return "(bytes[" + length() + "])";
+            }
+        }
+    }
 }
