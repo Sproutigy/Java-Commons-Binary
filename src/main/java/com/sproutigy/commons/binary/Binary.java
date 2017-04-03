@@ -25,8 +25,12 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     protected static final int BITS_PER_BYTE = 8;
 
+    public static final Charset DEFAULT_CHARSET = Charsets.UTF_8;
+
 
     protected long length = LENGTH_UNSPECIFIED;
+
+    protected Charset charset;
 
 
     protected Binary() { }
@@ -97,6 +101,20 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     public String asStringUTF8() throws BinaryException {
         return asString(Charsets.UTF_8);
+    }
+
+    /**
+     * Returns string in specified charset or in default (UTF-8) charset when not specified
+     *
+     * @return String representation of binary
+     * @throws BinaryException
+     */
+    public String asString() throws BinaryException {
+        Charset charset = getCharset();
+        if (charset == null) {
+            charset = DEFAULT_CHARSET;
+        }
+        return asString(charset);
     }
 
     public String asString(String charsetName) throws BinaryException {
@@ -343,7 +361,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
         byte[] bytes = asByteArray(false);
         int newLength = length > 0 ? (int)length : (int)(bytes.length-offset);
-        return new ByteArrayBinary(bytes, (int)offset, newLength);
+        return new ByteArrayBinary(bytes, (int)offset, newLength).setCharset(getCharset());
     }
 
     @Override
@@ -489,16 +507,16 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
      * @return
      */
     public static Binary fromString(String s) {
-        return fromString(s, Charsets.UTF_8);
+        return fromString(s, DEFAULT_CHARSET);
     }
 
     public static Binary fromString(String s, Charset charset) {
-        return new ByteArrayBinary(s.getBytes(charset));
+        return new ByteArrayBinary(s.getBytes(charset)).setCharset(charset);
     }
 
     public static Binary fromString(String s, String charsetName) {
         try {
-            return new ByteArrayBinary(s.getBytes(charsetName));
+            return new ByteArrayBinary(s.getBytes(charsetName)).setCharset(Charset.forName(charsetName));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -538,12 +556,24 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return new FileBinary(path);
     }
 
+    public static Binary fromFile(String path, Charset charset) {
+        return new FileBinary(path, charset);
+    }
+
     public static Binary from(File file) {
         return new FileBinary(file);
     }
 
+    public static Binary from(File file, Charset charset) {
+        return new FileBinary(file, charset);
+    }
+
     public static Binary from(Path path) {
-        return new FileBinary(path.toFile());
+        return from(path.toFile());
+    }
+
+    public static Binary from(Path path, Charset charset) {
+        return from(path.toFile(), charset);
     }
 
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -595,12 +625,27 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     };
 
+    public boolean hasCharset() {
+        return charset != null;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    protected Binary setCharset(Charset charset) {
+        this.charset = charset;
+        return this;
+    }
+
     @Override
     public String toString() {
         try {
-            return asStringUTF8();
-        } catch (BinaryException e) {
-            return super.toString();
-        }
+            if (hasCharset()) {
+                return asString(getCharset());
+            }
+        } catch (BinaryException ignore) { }
+
+        return super.toString();
     }
 }

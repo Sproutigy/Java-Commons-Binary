@@ -4,6 +4,7 @@ import com.sproutigy.commons.binary.Binary;
 import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * @author LukeAheadNET
@@ -14,12 +15,21 @@ public class FileBinary extends AbstractStreamableBinary {
 
 
     public FileBinary(String path) {
-        this(new File(path));
+        this(path, null);
+    }
+
+    public FileBinary(String path, Charset charset) {
+        this(new File(path), charset);
     }
 
     public FileBinary(File file) {
+        this(file, null);
+    }
+
+    public FileBinary(File file, Charset charset) {
         super(file.length());
         this.file = file;
+        this.setCharset(charset);
     }
 
     @Override
