@@ -1,3 +1,6 @@
+Version 2.3.1:
+- BinaryBuilder allows to specify charset
+
 Version 2.3.0 (2017-04-03):
 - Binary can now optionally carry charset information
 - Binary.asString() method (suggested to be used)

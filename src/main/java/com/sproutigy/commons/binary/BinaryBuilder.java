@@ -47,6 +47,7 @@ public class BinaryBuilder extends OutputStream {
         this.maxSizeBytesLimit = maxSizeBytesLimit;
     }
 
+    private Charset charset;
     private long length = 0;
     private int maxMemorySizeBytes;
     private long maxSizeBytesLimit;
@@ -60,6 +61,13 @@ public class BinaryBuilder extends OutputStream {
 
     public BinaryBuilder append(Binary data) throws BinaryException {
         return append(data.asStream());
+    }
+
+    public BinaryBuilder append(String string) {
+        if (charset == null) {
+            charset = Charsets.UTF_8;
+        }
+        return append(string, charset);
     }
 
     public BinaryBuilder append(String string, String charsetName) throws BinaryException {
@@ -186,6 +194,11 @@ public class BinaryBuilder extends OutputStream {
         }
     }
 
+    public BinaryBuilder charset(Charset charset) {
+        this.charset = charset;
+        return this;
+    }
+
     public Binary build() throws BinaryException {
         if (data == null) {
             if (filePath != null) {
@@ -194,6 +207,10 @@ public class BinaryBuilder extends OutputStream {
                 byte[] bytes = ((ByteArrayOutputStream) out).toByteArray();
                 data = Binary.from(bytes);
             }
+        }
+
+        if (charset != null) {
+            data.setCharsetInternal(charset);
         }
 
         try {

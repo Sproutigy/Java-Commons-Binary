@@ -104,7 +104,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     /**
-     * Returns string in specified charset or in default (UTF-8) charset when not specified
+     * Returns string in specified setCharsetInternal or in default (UTF-8) setCharsetInternal when not specified
      *
      * @return String representation of binary
      * @throws BinaryException
@@ -636,6 +636,10 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     protected Binary setCharset(Charset charset) {
         this.charset = charset;
         return this;
+    }
+
+    void setCharsetInternal(Charset charset) {
+        setCharset(charset);
     }
 
     @Override

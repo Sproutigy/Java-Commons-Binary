@@ -5,6 +5,7 @@ import com.sproutigy.commons.binary.impl.TempFileBinary;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
 
@@ -37,5 +38,16 @@ public class BinaryBuilderTest {
         assertTrue(file.exists());
         data.close();
         assertFalse(file.exists());
+    }
+
+    @Test
+    public void testBuildString() {
+        Charset charset = Charset.forName("US-ASCII");
+        BinaryBuilder builder = new BinaryBuilder();
+        builder.charset(charset);
+        builder.append("HELLO");
+        Binary binary = builder.build();
+        assertEquals(charset, binary.getCharset());
+        assertEquals("HELLO", binary.asString());
     }
 }
