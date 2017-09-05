@@ -203,14 +203,19 @@ public class BinaryBuilder extends OutputStream {
         if (data == null) {
             if (filePath != null) {
                 data = new TempFileBinary(filePath, true, false);
-            } else {
+            } else if (out != null) {
                 byte[] bytes = ((ByteArrayOutputStream) out).toByteArray();
                 data = Binary.from(bytes);
             }
         }
 
         if (charset != null) {
+            if (data == null) {
+                data = Binary.from(new byte[0]);
+            }
             data.setCharsetInternal(charset);
+        } else if (data == null) {
+            data = Binary.EMPTY;
         }
 
         try {
