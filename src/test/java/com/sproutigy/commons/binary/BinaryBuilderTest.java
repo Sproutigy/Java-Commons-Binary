@@ -50,4 +50,18 @@ public class BinaryBuilderTest {
         assertEquals(charset, binary.getCharset());
         assertEquals("HELLO", binary.asString());
     }
+
+    @Test
+    public void testEmpty() {
+        BinaryBuilder builder1 = new BinaryBuilder();
+        Binary binary1 = builder1.build();
+        assertEquals(0, binary1.length());
+
+        Charset charset = Charset.forName("US-ASCII");
+        BinaryBuilder builder2 = new BinaryBuilder();
+        builder2.charset(charset);
+        Binary binary2 = builder2.build();
+        assertEquals(0, binary2.length());
+        assertEquals(charset, binary2.getCharset());
+    }
 }
