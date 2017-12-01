@@ -40,7 +40,7 @@ public class BinaryTest {
         } finally {
             output.close();
         }
-        assertEquals("Hello World", Binary.from(file).asStringUTF8());
+        assertEquals("Hello World", Binary.fromFile(file).asStringUTF8());
     }
 
     @Test

@@ -8,7 +8,9 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
 /**
@@ -191,6 +193,28 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
                 out.close();
             }
         } catch(IOException e) {
+            throw new BinaryException(e);
+        }
+    }
+
+    public void toFile(Path path) throws BinaryException {
+        toFile(path, false);
+    }
+
+    public void toFile(Path path, boolean append) throws BinaryException {
+        try {
+            OutputStream out;
+            if (append) {
+                out = Files.newOutputStream(path, StandardOpenOption.APPEND);
+            } else {
+                out = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            try {
+                toStream(out);
+            } finally {
+                out.close();
+            }
+        } catch (IOException e) {
             throw new BinaryException(e);
         }
     }
@@ -560,20 +584,20 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return new FileBinary(path, charset);
     }
 
-    public static Binary from(File file) {
+    public static Binary fromFile(File file) {
         return new FileBinary(file);
     }
 
-    public static Binary from(File file, Charset charset) {
+    public static Binary fromFile(File file, Charset charset) throws BinaryException {
         return new FileBinary(file, charset);
     }
 
-    public static Binary from(Path path) {
-        return from(path.toFile());
+    public static Binary fromFile(Path path) throws BinaryException {
+        return new FileBinary(path);
     }
 
-    public static Binary from(Path path, Charset charset) {
-        return from(path.toFile(), charset);
+    public static Binary fromFile(Path path, Charset charset) {
+        return new FileBinary(path, charset);
     }
 
     protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];

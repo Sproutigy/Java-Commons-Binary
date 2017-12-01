@@ -5,30 +5,41 @@ import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author LukeAheadNET
  */
 public class FileBinary extends AbstractStreamableBinary {
 
-    private File file;
+    private Path path;
 
 
-    public FileBinary(String path) {
+    public FileBinary(String path) throws BinaryException {
         this(path, null);
     }
 
-    public FileBinary(String path, Charset charset) {
-        this(new File(path), charset);
+    public FileBinary(String path, Charset charset) throws BinaryException {
+        this(Paths.get(path), charset);
     }
 
-    public FileBinary(File file) {
-        this(file, null);
+    public FileBinary(File file) throws BinaryException {
+        this(file.toPath(), null);
     }
 
-    public FileBinary(File file, Charset charset) {
-        super(file.length());
-        this.file = file;
+    public FileBinary(File file, Charset charset) throws BinaryException {
+        this(file.toPath(), charset);
+    }
+
+    public FileBinary(Path path) throws BinaryException {
+        this(path, null);
+    }
+
+    public FileBinary(Path path, Charset charset) throws BinaryException {
+        super(fetchFileSize(path));
+        this.path = path;
         this.setCharset(charset);
     }
 
@@ -44,11 +55,15 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     public String getPathString() {
-        return file.getPath();
+        return path.toString();
     }
 
     public File getFile() {
-        return file;
+        return path.toFile();
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     @Override
@@ -77,16 +92,34 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     @Override
+    public byte[] asByteArray(boolean modifiable) throws BinaryException {
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
+    }
+
+    @Override
     public InputStream asStream() throws BinaryException {
         try {
-            return new FileInputStream(file);
-        } catch (FileNotFoundException e) {
+            return Files.newInputStream(path);
+        } catch (IOException e) {
             throw new BinaryException(e);
         }
     }
 
     @Override
     public String toString() {
-        return file.getPath();
+        return getPathString();
+    }
+
+
+    private static long fetchFileSize(Path path) throws BinaryException {
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
     }
 }

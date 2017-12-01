@@ -1,10 +1,14 @@
-Version 2.3.1:
+Version 2.4.0:
+- Support for Java 7+. Dropped Java 6
 - BinaryBuilder allows to specify charset
+- Using I/O Paths natively for File System support
+
 
 Version 2.3.0 (2017-04-03):
 - Binary can now optionally carry charset information
 - Binary.asString() method (suggested to be used)
 - Rewritten Binary.toString() method
+
 
 Version 2.2.0 (2017-01-30):
 - most Binary.fromXXX(x) changed to Binary.from(x) except Strings
