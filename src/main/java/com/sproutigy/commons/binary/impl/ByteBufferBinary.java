@@ -35,7 +35,7 @@ public class ByteBufferBinary extends AbstractBytesBinary {
             return bytes;
         } else {
             byte[] bytes = new byte[byteBuffer.limit()];
-            byteBuffer.flip();
+            byteBuffer.rewind();
             byteBuffer.get(bytes);
             return bytes;
         }

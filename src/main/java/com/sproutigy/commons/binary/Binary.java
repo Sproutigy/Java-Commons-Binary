@@ -1,12 +1,13 @@
 package com.sproutigy.commons.binary;
 
-import com.sproutigy.commons.binary.impl.ByteArrayBinary;
-import com.sproutigy.commons.binary.impl.ByteBufferBinary;
-import com.sproutigy.commons.binary.impl.FileBinary;
+import com.sproutigy.commons.binary.adapters.WritableByteChannelOutputStream;
+import com.sproutigy.commons.binary.impl.*;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -238,6 +239,14 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
                 in.close();
             }
         } catch(IOException e) {
+            throw new BinaryException(e);
+        }
+    }
+
+    public void toChannel(WritableByteChannel channel) {
+        try (WritableByteChannelOutputStream out = new WritableByteChannelOutputStream(channel)) {
+            toStream(out);
+        } catch (IOException e) {
             throw new BinaryException(e);
         }
     }
@@ -500,17 +509,8 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public static Binary from(InputStream in, long length) throws BinaryException {
-        if (length == 0)
-            return Binary.EMPTY;
-
-        long expectedLength = (length > 0) ? length : BinaryBuilder.DEFAULT_EXPECTED_SIZE;
-        BinaryBuilder builder = new BinaryBuilder(expectedLength);
-        try {
-            copyStream(in, builder);
-            return builder.build();
-        } catch(IOException e) {
-            throw new BinaryException(e);
-        }
+        if (length == 0) return Binary.EMPTY;
+        return new InputStreamBinary(in, length);
     }
 
     public static Binary from(byte[] bytes) {
@@ -518,11 +518,21 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public static Binary from(byte[] bytes, int offset, int length) {
+        if (length == 0) return Binary.EMPTY;
         return new ByteArrayBinary(bytes, offset, length);
     }
 
     public static Binary from(ByteBuffer byteBuffer) {
         return new ByteBufferBinary(byteBuffer);
+    }
+
+    public static Binary from(ReadableByteChannel channel) {
+        return from(channel, LENGTH_UNSPECIFIED);
+    }
+
+    public static Binary from(ReadableByteChannel channel, long length) {
+        if (length == 0) return Binary.EMPTY;
+        return new ReadableByteChannelBinary(channel, length);
     }
 
     /**
@@ -675,5 +685,17 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         } catch (BinaryException ignore) { }
 
         return super.toString();
+    }
+
+    @Override
+    protected Binary clone() {
+        long expectedLength = (length > 0) ? length : BinaryBuilder.DEFAULT_EXPECTED_SIZE;
+        BinaryBuilder builder = new BinaryBuilder(expectedLength);
+        try {
+            copyStream(asStream(), builder);
+            return builder.build();
+        } catch(IOException e) {
+            throw new BinaryException(e);
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.sproutigy.commons.binary;
 
+import com.sproutigy.commons.binary.impl.ByteBufferBinary;
 import com.sproutigy.commons.binary.impl.TempFileBinary;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
@@ -18,7 +20,7 @@ import java.util.UUID;
  *
  * @author LukeAheadNET
  */
-public class BinaryBuilder extends OutputStream {
+public class BinaryBuilder extends OutputStream implements WritableByteChannel {
 
     public static final long DEFAULT_EXPECTED_SIZE = 1024;
     public static final int DEFAULT_MAX_MEMORY_SIZE_BYTES = 100*1024;
@@ -164,6 +166,13 @@ public class BinaryBuilder extends OutputStream {
         append((byte)b);
     }
 
+    @Override
+    public int write(ByteBuffer src) throws IOException {
+        byte[] data = new ByteBufferBinary(src).asByteArray(false);
+        write(data);
+        return data.length;
+    }
+
     private void prepareAppend(int appendSize) throws BinaryException {
         if (data != null)
             throw new IllegalStateException("Data already built");
@@ -228,6 +237,11 @@ public class BinaryBuilder extends OutputStream {
         }
 
         return data;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return out != null;
     }
 
     @Override

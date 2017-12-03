@@ -1,7 +1,12 @@
-Version 2.4.0:
+Version 3.0.0:
 - Support for Java 7+. Dropped Java 6
-- BinaryBuilder allows to specify charset
 - Using I/O Paths natively for File System support
+- Channels support
+- clone() implemented
+- BinaryBuilder allows to specify charset
+- adapters
+- Binary from InputStream will not buffer data by default
+- Nonseekable sources can be read only once (InputStream and ReadableByteChannel without SeekableByteChannel implementation)
 
 
 Version 2.3.0 (2017-04-03):

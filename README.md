@@ -25,7 +25,8 @@ String UTF-8 | `Binary.fromString(s)` | `String asStringUTF8()`
 String UTF-16 | `Binary.fromString(s, "UTF-16")` | `String asStringUTF16()`
 String UTF-32 | `Binary.fromString(s, "UTF-32")` | `String asStringUTF32()`
 Stream | `Binary.from(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
-File | `Binary.from(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
+Channel | `Binary.from(readableByteChannel)` | `void toChannel(writableByteChannel)`
+File | `Binary.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
 Hex String | `Binary.fromHex(s)` | `String asHex()`
 Base64 String | `Binary.fromBase64(s)` | `String asBase64()` or `String asBase64(dialect,padding)`
 
