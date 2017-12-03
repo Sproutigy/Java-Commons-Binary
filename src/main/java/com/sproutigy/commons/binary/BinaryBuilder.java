@@ -220,9 +220,11 @@ public class BinaryBuilder extends OutputStream implements WritableByteChannel {
 
         if (charset != null) {
             if (data == null) {
-                data = Binary.from(new byte[0]);
+                data = Binary.empty(charset);
             }
-            data.setCharsetInternal(charset);
+            else {
+                data.setCharset(charset);
+            }
         } else if (data == null) {
             data = Binary.EMPTY;
         }

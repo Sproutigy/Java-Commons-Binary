@@ -620,6 +620,10 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     };
 
     public static final Binary EMPTY = new Binary(0) {
+        @Override
+        protected Binary setCharset(Charset charset) {
+            return this;
+        }
 
         @Override
         public byte[] asByteArray(boolean modifiable) throws BinaryException {
@@ -672,10 +676,6 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         return this;
     }
 
-    void setCharsetInternal(Charset charset) {
-        setCharset(charset);
-    }
-
     @Override
     public String toString() {
         try {
@@ -697,5 +697,15 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         } catch(IOException e) {
             throw new BinaryException(e);
         }
+    }
+
+    public static Binary empty() {
+        return EMPTY;
+    }
+
+    public static Binary empty(Charset charset) {
+        Binary binary = Binary.from(new byte[0]);
+        binary.setCharset(charset);
+        return binary;
     }
 }
