@@ -61,6 +61,11 @@ public class ByteArrayBinary extends Binary {
     }
 
     @Override
+    public boolean isConsumable() {
+        return false;
+    }
+
+    @Override
     public byte[] asByteArray(boolean modifiable) {
         if (!modifiable) {
             if (offset == 0 && bytes.length == length)

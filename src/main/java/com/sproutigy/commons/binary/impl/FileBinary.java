@@ -92,6 +92,11 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     @Override
+    public boolean isConsumable() {
+        return false;
+    }
+
+    @Override
     public byte[] asByteArray(boolean modifiable) throws BinaryException {
         try {
             return Files.readAllBytes(path);

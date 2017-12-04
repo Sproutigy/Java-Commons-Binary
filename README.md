@@ -5,7 +5,7 @@ This library provides `Binary` abstract class along with multiple implementors (
 
 
 ## Requirements and dependencies
-Requires Java 6 or later. No additional dependencies.
+Requires Java 7 or later. No additional dependencies.
 
 
 ## Elements
@@ -24,8 +24,8 @@ String ASCII | `Binary.fromString(s, "ASCII")` | `String asStringASCII()`
 String UTF-8 | `Binary.fromString(s)` | `String asStringUTF8()`
 String UTF-16 | `Binary.fromString(s, "UTF-16")` | `String asStringUTF16()`
 String UTF-32 | `Binary.fromString(s, "UTF-32")` | `String asStringUTF32()`
-Stream | `Binary.from(inputStream)` | `InputStream asStream()` or `void toStream(outputStream)`
-Channel | `Binary.from(readableByteChannel)` | `void toChannel(writableByteChannel)`
+Stream | `Binary.from(inputStream)` | `InputStream asStream()` or `void to(outputStream)`
+Channel | `Binary.from(readableByteChannel)` | `void to(writableByteChannel)`
 File | `Binary.fromFile(fileOrPath)` | `void toFile(fileOrPath)` or `String toTempFile()`
 Hex String | `Binary.fromHex(s)` | `String asHex()`
 Base64 String | `Binary.fromBase64(s)` | `String asBase64()` or `String asBase64(dialect,padding)`

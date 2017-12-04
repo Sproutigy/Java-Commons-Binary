@@ -2,17 +2,15 @@ package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
 import com.sproutigy.commons.binary.BinaryException;
-import com.sproutigy.commons.binary.adapters.ReadableByteChannelInputStream;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 
 public class ReadableByteChannelBinary extends Binary {
     protected ReadableByteChannel channel;
     protected Binary buffered;
+    protected Long offset;
 
     public ReadableByteChannelBinary(ReadableByteChannel channel) {
         this(channel, LENGTH_UNSPECIFIED);
@@ -40,11 +38,24 @@ public class ReadableByteChannelBinary extends Binary {
         if (buffered != null) {
             return buffered.asStream();
         }
-        return new ReadableByteChannelInputStream(channel);
+
+        if (channel instanceof SeekableByteChannel) {
+            try {
+                if (this.offset == null) {
+                    this.offset = ((SeekableByteChannel) channel).position();
+                } else {
+                    ((SeekableByteChannel) channel).position(offset);
+                }
+            } catch (Exception e) {
+                throw new BinaryException(e);
+            }
+        }
+
+        return Channels.newInputStream(channel);
     }
 
     @Override
-    public void toChannel(WritableByteChannel channel) throws BinaryException {
+    public void to(WritableByteChannel channel) throws BinaryException {
         try {
             if (buffered == null && this.channel instanceof FileChannel) {
                 FileChannel sourceChannel = (FileChannel) this.channel;
@@ -55,7 +66,22 @@ public class ReadableByteChannelBinary extends Binary {
             throw new BinaryException(e);
         }
 
-        super.toChannel(channel);
+        super.to(channel);
+    }
+
+    @Override
+    public void close() throws BinaryException {
+        try {
+            channel.close();
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
+        super.close();
+    }
+
+    @Override
+    public boolean isConsumable() {
+        return !(channel instanceof SeekableByteChannel);
     }
 
     @Override

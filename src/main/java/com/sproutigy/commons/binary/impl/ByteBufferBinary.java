@@ -22,6 +22,11 @@ public class ByteBufferBinary extends AbstractBytesBinary {
     }
 
     @Override
+    public boolean isConsumable() {
+        return false;
+    }
+
+    @Override
     public byte[] asByteArray(boolean modifiable) throws BinaryException {
         if (byteBuffer.hasArray()) {
             if (!modifiable) {

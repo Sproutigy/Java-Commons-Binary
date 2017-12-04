@@ -36,7 +36,7 @@ public class BinaryTest {
         FileOutputStream output = new FileOutputStream(file);
         try {
             output.write("Hello".getBytes("UTF-8"));
-            Binary.fromString(" World", Charset.forName("US-ASCII")).toStream(output);
+            Binary.fromString(" World", Charset.forName("US-ASCII")).to(output);
         } finally {
             output.close();
         }

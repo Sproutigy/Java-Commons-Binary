@@ -1,16 +1,17 @@
 package com.sproutigy.commons.binary;
 
-import com.sproutigy.commons.binary.adapters.WritableByteChannelOutputStream;
 import com.sproutigy.commons.binary.impl.*;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
@@ -41,6 +42,8 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     protected Binary(long length) {
         this.length = length;
     }
+
+    public abstract boolean isConsumable();
 
 
     public boolean hasLength() throws BinaryException {
@@ -178,7 +181,11 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
     }
 
     public void toFile(String path) throws BinaryException {
-        toFile(new File(path));
+        toFile(path, false);
+    }
+
+    public void toFile(String path, boolean append) throws BinaryException {
+        toFile(Paths.get(path), append);
     }
 
     public void toFile(File file) throws BinaryException {
@@ -189,7 +196,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         try {
             OutputStream out = new FileOutputStream(file, append);
             try {
-                toStream(out);
+                to(out);
             } finally {
                 out.close();
             }
@@ -206,12 +213,12 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         try {
             OutputStream out;
             if (append) {
-                out = Files.newOutputStream(path, StandardOpenOption.APPEND);
+                out = Files.newOutputStream(path, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             } else {
-                out = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                out = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
             try {
-                toStream(out);
+                to(out);
             } finally {
                 out.close();
             }
@@ -220,7 +227,7 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public void toStream(OutputStream out) throws BinaryException {
+    public void to(OutputStream out) throws BinaryException {
         byte[] buffer;
         if (hasLength() && length() < 4096) {
             buffer = new byte[(int)length()];
@@ -243,12 +250,16 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         }
     }
 
-    public void toChannel(WritableByteChannel channel) {
-        try (WritableByteChannelOutputStream out = new WritableByteChannelOutputStream(channel)) {
-            toStream(out);
+    public void to(WritableByteChannel channel) throws BinaryException {
+        try (OutputStream out = Channels.newOutputStream(channel)) {
+            to(out);
         } catch (IOException e) {
             throw new BinaryException(e);
         }
+    }
+
+    public void to(BinaryBuilder binaryBuilder) throws BinaryException {
+        to((OutputStream)binaryBuilder);
     }
 
     /**
@@ -623,6 +634,11 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
         @Override
         protected Binary setCharset(Charset charset) {
             return this;
+        }
+
+        @Override
+        public boolean isConsumable() {
+            return false;
         }
 
         @Override

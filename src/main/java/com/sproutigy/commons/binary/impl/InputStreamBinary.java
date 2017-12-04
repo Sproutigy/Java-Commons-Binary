@@ -3,6 +3,7 @@ package com.sproutigy.commons.binary.impl;
 import com.sproutigy.commons.binary.Binary;
 import com.sproutigy.commons.binary.BinaryException;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class InputStreamBinary extends Binary {
@@ -20,6 +21,11 @@ public class InputStreamBinary extends Binary {
 
     public InputStream getStream() {
         return stream;
+    }
+
+    @Override
+    public boolean isConsumable() {
+        return true;
     }
 
     @Override
@@ -42,5 +48,16 @@ public class InputStreamBinary extends Binary {
             return buffered.asStream();
         }
         return stream;
+    }
+
+    @Override
+    public void close() throws BinaryException {
+        buffered = null;
+        try {
+            stream.close();
+        } catch (IOException e) {
+            throw new BinaryException(e);
+        }
+        super.close();
     }
 }
