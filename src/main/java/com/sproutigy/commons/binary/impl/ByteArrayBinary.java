@@ -1,7 +1,8 @@
 package com.sproutigy.commons.binary.impl;
 
+import com.sproutigy.commons.binary.AbstractUncheckedBinary;
 import com.sproutigy.commons.binary.Binary;
-import com.sproutigy.commons.binary.BinaryException;
+import com.sproutigy.commons.binary.UncheckedBinary;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import java.util.Arrays;
 /**
  * @author LukeAheadNET
  */
-public class ByteArrayBinary extends Binary {
+public class ByteArrayBinary extends AbstractUncheckedBinary {
 
     private byte[] bytes;
     private int offset;
@@ -78,16 +79,16 @@ public class ByteArrayBinary extends Binary {
     }
 
     @Override
-    public String asString(String charsetName) throws BinaryException {
+    public String asString(String charsetName) {
         try {
             return new String(bytes, offset, (int)length, charsetName);
         } catch (UnsupportedEncodingException e) {
-            throw new BinaryException(e);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String asString(Charset charset) throws BinaryException {
+    public String asString(Charset charset) {
         return new String(bytes, offset, (int)length, charset);
     }
 
@@ -97,7 +98,7 @@ public class ByteArrayBinary extends Binary {
     }
 
     @Override
-    public Binary subrange(long offset, long length) throws BinaryException {
+    public ByteArrayBinary subrange(long offset, long length) {
         if (offset > Integer.MAX_VALUE || length > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Offset and/or length higher than Integer.MAX_VALUE");
         }

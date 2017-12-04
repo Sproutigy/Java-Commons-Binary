@@ -23,7 +23,7 @@ public class BinaryTest {
 
     @Test
     public void testStrings() throws UnsupportedEncodingException {
-        Binary dataFromString = Binary.from("HELLO".getBytes("UTF-8"));
+        UncheckedBinary dataFromString = Binary.fromString("HELLO", "UTF-8");
         assertEquals(5, dataFromString.length());
         assertArrayEquals("HELLO".getBytes("UTF-8"), dataFromString.asByteArray());
         assertEquals("HELLO", Binary.fromString("HELLO", Charset.forName("US-ASCII")).asStringASCII());
@@ -44,7 +44,7 @@ public class BinaryTest {
     }
 
     @Test
-    public void testSubrange() {
+    public void testSubrange() throws IOException {
         assertEquals("ello", Binary.fromString("Hello World", Charset.forName("US-ASCII")).subrange(1, 4).asStringASCII());
         String file = Binary.fromString("ABCDEFGHIJK", Charset.forName("US-ASCII")).toTempFile();
         assertEquals("BC", Binary.fromFile(file).subrange(1,2).asStringASCII());
@@ -52,20 +52,20 @@ public class BinaryTest {
 
     @Test
     public void testHex() {
-        Binary b = Binary.fromHex("48454c4c4f");
+        UncheckedBinary b = Binary.fromHex("48454c4c4f");
         assertEquals("HELLO", b.asStringASCII());
         assertEquals("48454C4C4F", b.asHex());
     }
 
     @Test
     public void testBase64() {
-        Binary b = Binary.fromBase64("SEVMTE8");
+        UncheckedBinary b = Binary.fromBase64("SEVMTE8");
         assertEquals("HELLO", b.asStringASCII());
         assertEquals("SEVMTE8=", b.asBase64(BaseEncoding.Padding.STANDARD));
         assertEquals("SEVMTE8.", b.asBase64(BaseEncoding.Padding.SAFE));
         assertEquals("SEVMTE8", b.asBase64(BaseEncoding.Padding.NO));
 
-        Binary b2 = Binary.fromBase64("zs/Q0dI=");
+        UncheckedBinary b2 = Binary.fromBase64("zs/Q0dI=");
         byte[] bytes = b2.asByteArray();
         assertEquals((byte)206, bytes[0]);
         assertEquals((byte)207, bytes[1]);
@@ -81,13 +81,13 @@ public class BinaryTest {
     public void testStringCharset() {
         String s = "tęśt";
 
-        Binary b1 = Binary.fromString(s, Charsets.UTF_32);
+        UncheckedBinary b1 = Binary.fromString(s, Charsets.UTF_32);
         assertTrue(b1.hasCharset());
         assertEquals(Charsets.UTF_32, b1.getCharset());
         String t1 = b1.asString();
         assertEquals(s, t1);
 
-        Binary b2 = Binary.fromString(s, Charsets.ISO_8859_1);
+        UncheckedBinary b2 = Binary.fromString(s, Charsets.ISO_8859_1);
         assertTrue(b2.hasCharset());
         assertEquals(Charsets.ISO_8859_1, b2.getCharset());
         String t2 = b2.asString();

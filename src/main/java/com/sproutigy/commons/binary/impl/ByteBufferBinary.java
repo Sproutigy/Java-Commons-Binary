@@ -1,7 +1,6 @@
 package com.sproutigy.commons.binary.impl;
 
-import com.sproutigy.commons.binary.BinaryException;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -27,7 +26,7 @@ public class ByteBufferBinary extends AbstractBytesBinary {
     }
 
     @Override
-    public byte[] asByteArray(boolean modifiable) throws BinaryException {
+    public byte[] asByteArray(boolean modifiable) {
         if (byteBuffer.hasArray()) {
             if (!modifiable) {
                 if (byteBuffer.arrayOffset() == 0 && byteBuffer.limit() == byteBuffer.array().length) {
@@ -47,18 +46,18 @@ public class ByteBufferBinary extends AbstractBytesBinary {
     }
 
     @Override
-    public ByteBuffer asByteBuffer(boolean modifiable) throws BinaryException {
+    public ByteBuffer asByteBuffer(boolean modifiable) {
         if (!modifiable) return byteBuffer;
         return super.asByteBuffer(true);
     }
 
     @Override
-    public InputStream asStream() throws BinaryException {
+    public InputStream asStream() {
         return new InputStream() {
             private int position = 0;
 
             @Override
-            public int read() throws BinaryException {
+            public int read() throws IOException {
                 if (position >= byteBuffer.limit()) {
                     return EOF;
                 }

@@ -1,7 +1,6 @@
 package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
-import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +25,7 @@ public class ReadableByteChannelBinary extends Binary {
     }
 
     @Override
-    public byte[] asByteArray(boolean modifiable) throws BinaryException {
+    public byte[] asByteArray(boolean modifiable) throws IOException {
         if (buffered != null) {
             return buffered.asByteArray(modifiable);
         }
@@ -34,20 +33,16 @@ public class ReadableByteChannelBinary extends Binary {
     }
 
     @Override
-    public InputStream asStream() throws BinaryException {
+    public InputStream asStream() throws IOException {
         if (buffered != null) {
             return buffered.asStream();
         }
 
         if (channel instanceof SeekableByteChannel) {
-            try {
-                if (this.offset == null) {
-                    this.offset = ((SeekableByteChannel) channel).position();
-                } else {
-                    ((SeekableByteChannel) channel).position(offset);
-                }
-            } catch (Exception e) {
-                throw new BinaryException(e);
+            if (this.offset == null) {
+                this.offset = ((SeekableByteChannel) channel).position();
+            } else {
+                ((SeekableByteChannel) channel).position(offset);
             }
         }
 
@@ -55,27 +50,19 @@ public class ReadableByteChannelBinary extends Binary {
     }
 
     @Override
-    public void to(WritableByteChannel channel) throws BinaryException {
-        try {
-            if (buffered == null && this.channel instanceof FileChannel) {
-                FileChannel sourceChannel = (FileChannel) this.channel;
-                sourceChannel.transferTo(sourceChannel.position(), sourceChannel.size() - sourceChannel.position(), channel);
-                return;
-            }
-        } catch (Exception e) {
-            throw new BinaryException(e);
+    public void to(WritableByteChannel channel) throws IOException {
+        if (buffered == null && this.channel instanceof FileChannel) {
+            FileChannel sourceChannel = (FileChannel) this.channel;
+            sourceChannel.transferTo(sourceChannel.position(), sourceChannel.size() - sourceChannel.position(), channel);
+            return;
         }
 
         super.to(channel);
     }
 
     @Override
-    public void close() throws BinaryException {
-        try {
-            channel.close();
-        } catch (IOException e) {
-            throw new BinaryException(e);
-        }
+    public void close() throws IOException {
+        channel.close();
         super.close();
     }
 
@@ -85,18 +72,14 @@ public class ReadableByteChannelBinary extends Binary {
     }
 
     @Override
-    public boolean hasLength() throws BinaryException {
+    public boolean hasLength() throws IOException {
         return channel instanceof SeekableByteChannel || super.hasLength();
     }
 
     @Override
-    protected long provideLength() throws BinaryException {
+    protected long provideLength() throws IOException {
         if (channel instanceof SeekableByteChannel) {
-            try {
-                return ((SeekableByteChannel) channel).size() - ((SeekableByteChannel) channel).position();
-            } catch (Exception e) {
-                throw new BinaryException(e);
-            }
+            return ((SeekableByteChannel) channel).size() - ((SeekableByteChannel) channel).position();
         }
 
         buffered = clone();

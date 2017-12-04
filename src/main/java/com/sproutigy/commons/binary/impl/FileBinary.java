@@ -1,7 +1,6 @@
 package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
-import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -17,27 +16,27 @@ public class FileBinary extends AbstractStreamableBinary {
     private Path path;
 
 
-    public FileBinary(String path) throws BinaryException {
+    public FileBinary(String path) {
         this(path, null);
     }
 
-    public FileBinary(String path, Charset charset) throws BinaryException {
+    public FileBinary(String path, Charset charset) {
         this(Paths.get(path), charset);
     }
 
-    public FileBinary(File file) throws BinaryException {
+    public FileBinary(File file) {
         this(file.toPath(), null);
     }
 
-    public FileBinary(File file, Charset charset) throws BinaryException {
+    public FileBinary(File file, Charset charset) {
         this(file.toPath(), charset);
     }
 
-    public FileBinary(Path path) throws BinaryException {
+    public FileBinary(Path path) {
         this(path, null);
     }
 
-    public FileBinary(Path path, Charset charset) throws BinaryException {
+    public FileBinary(Path path, Charset charset) {
         super(fetchFileSize(path));
         this.path = path;
         this.setCharset(charset);
@@ -67,27 +66,19 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     @Override
-    public Binary subrange(long offset, long length) throws BinaryException {
+    public Binary subrange(long offset, long length) throws IOException {
+        final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
         try {
-            final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
-            try {
-                randomAccessFile.seek(offset);
-                InputStream streamAdapter = new InputStream() {
-                    @Override
-                    public int read() {
-                        try {
-                            return randomAccessFile.read();
-                        } catch (IOException e) {
-                            throw new BinaryException(e);
-                        }
-                    }
-                };
-                return Binary.from(readBytesFromStream(streamAdapter, length));
-            } finally {
-                randomAccessFile.close();
-            }
-        } catch(IOException e) {
-            throw new BinaryException(e);
+            randomAccessFile.seek(offset);
+            InputStream streamAdapter = new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return randomAccessFile.read();
+                }
+            };
+            return Binary.from(readBytesFromStream(streamAdapter, length));
+        } finally {
+            randomAccessFile.close();
         }
     }
 
@@ -97,21 +88,13 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
     @Override
-    public byte[] asByteArray(boolean modifiable) throws BinaryException {
-        try {
-            return Files.readAllBytes(path);
-        } catch (IOException e) {
-            throw new BinaryException(e);
-        }
+    public byte[] asByteArray(boolean modifiable) throws IOException {
+        return Files.readAllBytes(path);
     }
 
     @Override
-    public InputStream asStream() throws BinaryException {
-        try {
-            return Files.newInputStream(path);
-        } catch (IOException e) {
-            throw new BinaryException(e);
-        }
+    public InputStream asStream() throws IOException {
+        return Files.newInputStream(path);
     }
 
     @Override
@@ -120,11 +103,11 @@ public class FileBinary extends AbstractStreamableBinary {
     }
 
 
-    private static long fetchFileSize(Path path) throws BinaryException {
+    private static long fetchFileSize(Path path) {
         try {
             return Files.size(path);
         } catch (IOException e) {
-            throw new BinaryException(e);
+            return LENGTH_UNSPECIFIED;
         }
     }
 }

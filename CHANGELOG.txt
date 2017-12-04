@@ -6,6 +6,7 @@ Version 3.0.0:
 - BinaryBuilder allows to specify charset
 - Binary from InputStream will not buffer data by default
 - Nonseekable sources can be read only once (InputStream and ReadableByteChannel without SeekableByteChannel implementation)
+- New approach to exceptions
 
 
 Version 2.3.0 (2017-04-03):

@@ -15,12 +15,12 @@ import static org.junit.Assert.*;
 public class BinaryBuilderTest {
 
     @Test
-    public void testBuildSmallData() throws BinaryException {
+    public void testBuildSmallData() throws Exception {
         BinaryBuilder builder = new BinaryBuilder().append("HELLO", "UTF-8").append((byte) 0);
         assertEquals(6, builder.length());
         Binary data = builder.build();
         assertEquals(6, data.length());
-        assertEquals(true, data instanceof ByteArrayBinary);
+        assertEquals(true, ((UncheckedBinary)data).decorated instanceof ByteArrayBinary);
     }
 
     @Test
@@ -33,15 +33,15 @@ public class BinaryBuilderTest {
         assertEquals(length, builder.length());
         Binary data = builder.build();
         assertEquals(length, data.length());
-        assertEquals(true, data instanceof TempFileBinary);
-        File file = ((TempFileBinary)data).getFile();
+        assertEquals(true, ((UncheckedBinary)data).decorated instanceof TempFileBinary);
+        File file = ((TempFileBinary)((UncheckedBinary)data).decorated).getFile();
         assertTrue(file.exists());
         data.close();
         assertFalse(file.exists());
     }
 
     @Test
-    public void testBuildString() {
+    public void testBuildString() throws Exception {
         Charset charset = Charset.forName("US-ASCII");
         BinaryBuilder builder = new BinaryBuilder();
         builder.charset(charset);
@@ -52,7 +52,7 @@ public class BinaryBuilderTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void testEmpty() throws Exception {
         BinaryBuilder builder1 = new BinaryBuilder();
         Binary binary1 = builder1.build();
         assertEquals(0, binary1.length());

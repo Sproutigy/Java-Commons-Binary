@@ -1,7 +1,6 @@
 package com.sproutigy.commons.binary.impl;
 
 import com.sproutigy.commons.binary.Binary;
-import com.sproutigy.commons.binary.BinaryException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +28,13 @@ public class InputStreamBinary extends Binary {
     }
 
     @Override
-    protected long provideLength() throws BinaryException {
+    protected long provideLength() throws IOException {
         buffered = clone();
         return buffered.length();
     }
 
     @Override
-    public byte[] asByteArray(boolean modifiable) throws BinaryException {
+    public byte[] asByteArray(boolean modifiable) throws IOException {
         if (buffered != null) {
             return buffered.asByteArray(modifiable);
         }
@@ -43,7 +42,7 @@ public class InputStreamBinary extends Binary {
     }
 
     @Override
-    public InputStream asStream() throws BinaryException {
+    public InputStream asStream() throws IOException {
         if (buffered != null) {
             return buffered.asStream();
         }
@@ -51,13 +50,12 @@ public class InputStreamBinary extends Binary {
     }
 
     @Override
-    public void close() throws BinaryException {
-        buffered = null;
-        try {
-            stream.close();
-        } catch (IOException e) {
-            throw new BinaryException(e);
+    public void close() throws IOException {
+        if (buffered != null) {
+            buffered.close();
+            buffered = null;
         }
+        stream.close();
         super.close();
     }
 }
