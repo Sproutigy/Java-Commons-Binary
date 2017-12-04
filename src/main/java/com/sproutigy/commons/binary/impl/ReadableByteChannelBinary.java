@@ -61,6 +61,18 @@ public class ReadableByteChannelBinary extends Binary {
     }
 
     @Override
+    public Binary subrange(long offset, long length) throws IOException {
+        if (channel instanceof SeekableByteChannel) {
+            ((SeekableByteChannel)channel).position(offset);
+            try (InputStream inputStream = Channels.newInputStream(channel)) {
+                return Binary.from(readBytesFromStream(inputStream, length));
+            }
+        }
+
+        return super.subrange(offset, length);
+    }
+
+    @Override
     public void close() throws IOException {
         channel.close();
         super.close();

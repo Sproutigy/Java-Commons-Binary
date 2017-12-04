@@ -32,6 +32,19 @@ public class UncheckedBinary extends Binary {
     }
 
     @Override
+    public boolean isEmpty() {
+        try {
+            if (decorated == null) {
+                return super.isEmpty();
+            } else {
+                return decorated.isEmpty();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public boolean hasLength() {
         try {
             if (decorated == null) {

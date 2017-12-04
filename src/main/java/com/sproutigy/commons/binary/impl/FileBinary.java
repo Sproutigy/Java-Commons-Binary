@@ -3,10 +3,13 @@ package com.sproutigy.commons.binary.impl;
 import com.sproutigy.commons.binary.Binary;
 
 import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 /**
  * @author LukeAheadNET
@@ -67,24 +70,38 @@ public class FileBinary extends AbstractStreamableBinary {
 
     @Override
     public Binary subrange(long offset, long length) throws IOException {
-        final RandomAccessFile randomAccessFile = new RandomAccessFile(getFile(), "r");
+        FileChannel fileChannel = FileChannel.open(getPath(), StandardOpenOption.READ);
         try {
-            randomAccessFile.seek(offset);
-            InputStream streamAdapter = new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return randomAccessFile.read();
-                }
-            };
-            return Binary.from(readBytesFromStream(streamAdapter, length));
+            fileChannel.position(offset);
+            try(InputStream inputStream = Channels.newInputStream(fileChannel)) {
+                return Binary.from(readBytesFromStream(inputStream, length));
+            }
         } finally {
-            randomAccessFile.close();
+            fileChannel.close();
         }
     }
 
     @Override
     public boolean isConsumable() {
         return false;
+    }
+
+    @Override
+    public boolean isEmpty() throws IOException {
+        if (!Files.exists(path)) {
+            return true;
+        }
+        return length() == 0;
+    }
+
+    @Override
+    public long length() throws IOException {
+        return length(true);
+    }
+
+    @Override
+    public long length(boolean forceCalculate) throws IOException {
+        return Files.size(getPath());
     }
 
     @Override

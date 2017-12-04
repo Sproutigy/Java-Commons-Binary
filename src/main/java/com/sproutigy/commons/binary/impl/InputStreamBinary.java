@@ -28,6 +28,25 @@ public class InputStreamBinary extends Binary {
     }
 
     @Override
+    public boolean isEmpty() throws IOException {
+        if (stream.available() > 0) {
+            return false;
+        }
+
+        if (stream.markSupported()) {
+            stream.mark(2);
+            int r = stream.read();
+            if (r == EOF) {
+                return true;
+            }
+            stream.reset();
+            return false;
+        }
+
+        return super.isEmpty();
+    }
+
+    @Override
     protected long provideLength() throws IOException {
         buffered = clone();
         return buffered.length();

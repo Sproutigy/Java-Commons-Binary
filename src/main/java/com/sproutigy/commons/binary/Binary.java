@@ -45,6 +45,9 @@ public abstract class Binary implements Closeable, Comparable<Binary>, Cloneable
 
     public abstract boolean isConsumable();
 
+    public boolean isEmpty() throws IOException {
+        return length() == 0;
+    }
 
     public boolean hasLength() throws IOException {
         return length != LENGTH_UNSPECIFIED;
