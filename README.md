@@ -92,7 +92,7 @@ When data is rather small it is kept in memory. To prevent OutOfMemoryException,
 
 #### Example
 ```java
-Binary myData = new BinaryBuilder().appendISO("HELL").append( (byte)79 ).build();
+Binary myData = new BinaryBuilder().appendUTF8("HELL").append( (byte)79 ).build();
 ```
 
 ### BinaryMap

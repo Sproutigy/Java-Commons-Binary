@@ -84,10 +84,6 @@ public class BinaryBuilder extends OutputStream implements WritableByteChannel {
         return append(string, Charsets.US_ASCII);
     }
 
-    public BinaryBuilder appendISO(String string) {
-        return append(string, Charsets.ISO_8859_1);
-    }
-
     public BinaryBuilder appendUTF8(String string) {
         return append(string, Charsets.UTF_8);
     }
